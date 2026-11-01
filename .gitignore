@@ -1,0 +1,14 @@
+node_modules
+dist
+.build
+.data
+.data-lan
+.env
+.env.*
+!.env.example
+*.local
+/api.txt
+*.tsbuildinfo
+test-results
+playwright-report
+public/excalidraw-assets

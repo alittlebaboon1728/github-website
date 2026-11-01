@@ -1,0 +1,239 @@
+{
+  "live": {
+    "count": 10,
+    "summaries": [
+      {
+        "name": "codecrafters-io/build-your-own-x",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-11-01T02:03:21.801Z",
+        "sourceUrl": "https://github.com/codecrafters-io/build-your-own-x#readme"
+      },
+      {
+        "name": "sindresorhus/awesome",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-11-01T04:06:33.779Z",
+        "sourceUrl": "https://github.com/sindresorhus/awesome#readme"
+      },
+      {
+        "name": "public-apis/public-apis",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T16:27:09.084Z",
+        "sourceUrl": "https://github.com/public-apis/public-apis"
+      },
+      {
+        "name": "freeCodeCamp/freeCodeCamp",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T18:44:06.240Z",
+        "sourceUrl": "https://github.com/freeCodeCamp/freeCodeCamp#readme"
+      },
+      {
+        "name": "morluto/rea",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T16:20:15.555Z",
+        "sourceUrl": "https://github.com/morluto/rea"
+      },
+      {
+        "name": "EbookFoundation/free-programming-books",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-11-01T02:29:45.581Z",
+        "sourceUrl": "https://github.com/EbookFoundation/free-programming-books#readme"
+      },
+      {
+        "name": "openclaw/openclaw",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T16:20:15.693Z",
+        "sourceUrl": "https://github.com/openclaw/openclaw"
+      },
+      {
+        "name": "donnemartin/system-design-primer",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T16:10:30.356Z",
+        "sourceUrl": "https://github.com/donnemartin/system-design-primer#readme"
+      },
+      {
+        "name": "nilbuild/developer-roadmap",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T16:02:52.223Z",
+        "sourceUrl": "https://github.com/nilbuild/developer-roadmap#readme"
+      },
+      {
+        "name": "jwasham/coding-interview-university",
+        "model": "deepseek-flash",
+        "generatedAt": "2026-10-31T17:10:21.752Z",
+        "sourceUrl": "https://github.com/jwasham/coding-interview-university#readme"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "filters",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 600,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 820,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "summary-reading",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "live-trend",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "rows": 0
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "filters",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 600,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 820,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "ranking",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "summary-reading",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "rows": 10
+    },
+    {
+      "name": "live-trend",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "rows": 0
+    },
+    {
+      "name": "growth-fixture",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "rows": 3
+    },
+    {
+      "name": "growth-fixture",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "rows": 3
+    },
+    {
+      "name": "growth-fixture",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "rows": 3
+    },
+    {
+      "name": "growth-fixture",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "rows": 3
+    }
+  ],
+  "errors": [],
+  "growthScreenshotsUseFixtures": true
+}

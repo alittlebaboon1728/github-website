@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "theme": "light",
+      "page": 360,
+      "width": 360,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "light",
+      "page": 390,
+      "width": 390,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "light",
+      "page": 768,
+      "width": 768,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "light",
+      "page": 1024,
+      "width": 1024,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "light",
+      "page": 1440,
+      "width": 1440,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "dark",
+      "page": 360,
+      "width": 360,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "dark",
+      "page": 390,
+      "width": 390,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "dark",
+      "page": 768,
+      "width": 768,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "dark",
+      "page": 1024,
+      "width": 1024,
+      "rows": 6,
+      "bars": 13
+    },
+    {
+      "theme": "dark",
+      "page": 1440,
+      "width": 1440,
+      "rows": 6,
+      "bars": 13
+    }
+  ],
+  "errors": [],
+  "api": {
+    "status": 200,
+    "provider": "OSSInsight",
+    "events": 50,
+    "bars": 13,
+    "fetchedAt": "2026-10-31T14:22:04.539Z"
+  }
+}

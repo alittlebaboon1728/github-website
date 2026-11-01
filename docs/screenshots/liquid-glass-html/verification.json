@@ -1,0 +1,440 @@
+{
+  "checks": [
+    {
+      "name": "home",
+      "theme": "light",
+      "width": 360,
+      "actual": 360
+    },
+    {
+      "name": "cards",
+      "theme": "light",
+      "width": 360,
+      "actual": 360
+    },
+    {
+      "name": "home",
+      "theme": "light",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "cards",
+      "theme": "light",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "home",
+      "theme": "light",
+      "width": 768,
+      "actual": 768
+    },
+    {
+      "name": "cards",
+      "theme": "light",
+      "width": 768,
+      "actual": 768
+    },
+    {
+      "name": "home",
+      "theme": "light",
+      "width": 1024,
+      "actual": 1024
+    },
+    {
+      "name": "cards",
+      "theme": "light",
+      "width": 1024,
+      "actual": 1024
+    },
+    {
+      "name": "home",
+      "theme": "light",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "cards",
+      "theme": "light",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "menu",
+      "theme": "light",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "quick-read",
+      "theme": "light",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "quick-read",
+      "theme": "light",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "quick-read",
+      "theme": "light",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "home",
+      "theme": "dark",
+      "width": 360,
+      "actual": 360
+    },
+    {
+      "name": "cards",
+      "theme": "dark",
+      "width": 360,
+      "actual": 360
+    },
+    {
+      "name": "home",
+      "theme": "dark",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "cards",
+      "theme": "dark",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "home",
+      "theme": "dark",
+      "width": 768,
+      "actual": 768
+    },
+    {
+      "name": "cards",
+      "theme": "dark",
+      "width": 768,
+      "actual": 768
+    },
+    {
+      "name": "home",
+      "theme": "dark",
+      "width": 1024,
+      "actual": 1024
+    },
+    {
+      "name": "cards",
+      "theme": "dark",
+      "width": 1024,
+      "actual": 1024
+    },
+    {
+      "name": "home",
+      "theme": "dark",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "cards",
+      "theme": "dark",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "menu",
+      "theme": "dark",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "quick-read",
+      "theme": "dark",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "quick-read",
+      "theme": "dark",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "quick-read",
+      "theme": "dark",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "trends",
+      "theme": "dark",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "trends",
+      "theme": "dark",
+      "width": 768,
+      "actual": 768
+    },
+    {
+      "name": "trends",
+      "theme": "dark",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "trends",
+      "theme": "light",
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "name": "trends",
+      "theme": "light",
+      "width": 768,
+      "actual": 768
+    },
+    {
+      "name": "trends",
+      "theme": "light",
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "name": "pointer-reflection",
+      "lightStart": "81px",
+      "lightEnd": "331px"
+    },
+    {
+      "name": "reduced-motion",
+      "light": "",
+      "transform": "none"
+    },
+    {
+      "name": "reduced-transparency",
+      "blur": "none",
+      "background": "rgb(250, 251, 252)"
+    },
+    {
+      "name": "original-svg-pipeline",
+      "svgRoots": 1,
+      "filters": 8,
+      "active": 12,
+      "filter": "blur(12px) saturate(1.5) brightness(1.025) url(\"#lgh-2-262\")"
+    },
+    {
+      "name": "rendered-edge-displacement",
+      "edgePixelDifference": 32.017,
+      "centerPixelDifference": 0
+    }
+  ],
+  "materials": [
+    {
+      "theme": "light",
+      "surfaces": [
+        {
+          "name": "project-search",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(12px) saturate(1.5) brightness(1.025) url(\"#lgh-2-6\")"
+        },
+        {
+          "name": "project-search-icon project-search-submit",
+          "background": "rgba(255, 255, 255, 0.64)",
+          "color": "rgb(40, 104, 94)",
+          "blur": "blur(8px) saturate(1.5) brightness(1.025) url(\"#lgh-2-7\")"
+        },
+        {
+          "name": "gh-pulse ",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(12px) saturate(1.5) brightness(1.025) url(\"#lgh-2-8\")"
+        },
+        {
+          "name": "button primary-button",
+          "background": "color(srgb 0.160784 0.235294 0.219608 / 0.94)",
+          "color": "rgb(255, 255, 255)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(92, 98, 104)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(92, 98, 104)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(92, 98, 104)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(92, 98, 104)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(92, 98, 104)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(32, 35, 38)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.08)",
+          "color": "rgb(92, 98, 104)",
+          "blur": "blur(18px) saturate(1.25)"
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "surfaces": [
+        {
+          "name": "project-search",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-search-icon project-search-submit",
+          "background": "rgba(255, 255, 255, 0.09)",
+          "color": "rgb(172, 217, 205)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "gh-pulse ",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "button primary-button",
+          "background": "color(srgb 0.862745 0.909804 0.890196 / 0.94)",
+          "color": "rgb(32, 50, 44)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(12px) saturate(1.5) brightness(1.08) url(\"#lgh-2-116\")"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(185, 189, 197)",
+          "blur": "blur(8px) saturate(1.5) brightness(1.08) url(\"#lgh-2-19\")"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(12px) saturate(1.5) brightness(1.08) url(\"#lgh-2-80\")"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(185, 189, 197)",
+          "blur": "blur(8px) saturate(1.5) brightness(1.08) url(\"#lgh-2-19\")"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(12px) saturate(1.5) brightness(1.08) url(\"#lgh-2-119\")"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(185, 189, 197)",
+          "blur": "blur(8px) saturate(1.5) brightness(1.08) url(\"#lgh-2-19\")"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(185, 189, 197)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(185, 189, 197)",
+          "blur": "blur(18px) saturate(1.25)"
+        },
+        {
+          "name": "project-card project-exhibit trend-project-card has-ai-summary",
+          "background": "rgba(255, 255, 255, 0.06)",
+          "color": "rgb(241, 242, 244)",
+          "blur": "blur(28px) saturate(1.15)"
+        },
+        {
+          "name": "save-btn ",
+          "background": "rgba(255, 255, 255, 0.03)",
+          "color": "rgb(185, 189, 197)",
+          "blur": "blur(18px) saturate(1.25)"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

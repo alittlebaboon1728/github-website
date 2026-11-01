@@ -1,0 +1,304 @@
+/* Compact repository cards, with optional images from the project's README. */
+.discovery-edition .project-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
+}
+.discovery-edition .project-exhibit.trend-project-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 0;
+  background: var(--card);
+  box-shadow: none;
+  transition: border-color 180ms ease;
+}
+.discovery-edition .project-exhibit.trend-project-card:hover {
+  border-color: color-mix(in srgb, var(--forest) 40%, var(--border));
+  box-shadow: none;
+  transform: none;
+}
+.project-media-sentinel {
+  display: block;
+  width: 1px;
+  height: 0;
+  overflow: hidden;
+}
+.trend-card-cover {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: var(--soft);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.trend-card-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  object-fit: cover;
+  object-position: top;
+}
+.trend-card-content {
+  padding: 17px 18px 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 226px;
+  min-width: 0;
+}
+.trend-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 15px;
+}
+.trend-author-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--soft);
+  color: var(--forest);
+  font-size: 17px;
+}
+.trend-author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.trend-card-identity {
+  flex: 1;
+  min-width: 0;
+}
+.discovery-edition .trend-project-card .gallery-title {
+  display: block;
+  min-height: 24px;
+  max-width: 100%;
+  padding: 0;
+  color: var(--text);
+  text-align: left;
+}
+.discovery-edition .trend-project-card .gallery-title h3 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.35px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trend-card-author {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  font-size: 12px;
+  color: var(--secondary);
+  line-height: 1.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trend-card-author:hover {
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.discovery-edition .trend-project-card .save-btn {
+  position: static;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--secondary);
+  opacity: 0.7;
+}
+.discovery-edition .trend-project-card .save-btn:hover,
+.discovery-edition .trend-project-card .save-btn.saved {
+  background: var(--soft);
+  color: var(--forest);
+  opacity: 1;
+}
+.trend-summary-source {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  font-size: 11px;
+  color: var(--secondary);
+  line-height: 1.9;
+  margin: -2px 0 4px;
+}
+.trend-summary-source span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.trend-summary-source svg {
+  color: var(--accent);
+}
+.trend-summary-source button {
+  padding: 4px;
+  margin: -4px;
+  color: var(--forest);
+  font-size: inherit;
+}
+.trend-summary-source button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.trend-summary {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border-radius: 3px;
+  text-align: left;
+}
+.discovery-edition .trend-project-card .exhibit-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 0;
+  margin: 0;
+  color: var(--secondary);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.trend-card-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 6px;
+  padding-top: 11px;
+}
+.trend-card-topics span {
+  max-width: 100%;
+  padding: 2px 9px;
+  border: 1px solid color-mix(in srgb, var(--forest) 17%, var(--border));
+  border-radius: 20px;
+  color: var(--forest);
+  font-size: 10px;
+  line-height: 1.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trend-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 22px;
+  color: var(--secondary);
+  font-size: 10px;
+}
+.trend-card-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+}
+.trend-card-stats > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.trend-card-stats i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.trend-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.trend-card-actions time {
+  white-space: nowrap;
+}
+.trend-card-actions button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--secondary);
+}
+.trend-card-actions button:hover {
+  background: var(--soft);
+  color: var(--forest);
+}
+.trend-project-card :is(.card-generation-status, .card-generation-error) {
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 11px;
+}
+.project-introduction > .trend-card-cover {
+  margin-bottom: 26px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.project-introduction > .trend-card-cover img {
+  max-height: 420px;
+  object-fit: contain;
+}
+@media (max-width: 800px) {
+  .discovery-edition .project-grid {
+    gap: 12px;
+  }
+  .trend-card-content {
+    padding: 15px 15px 8px;
+  }
+  .trend-card-footer {
+    flex-wrap: wrap;
+  }
+  .trend-card-actions {
+    margin-left: auto;
+  }
+}
+@media (max-width: 600px) {
+  .discovery-edition .project-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .trend-card-content {
+    padding: 16px 16px 9px;
+    min-height: 226px;
+  }
+  .trend-card-cover img {
+    max-height: 220px;
+  }
+  .trend-card-footer {
+    flex-wrap: nowrap;
+  }
+}
+@media (pointer: coarse) {
+  .discovery-edition .trend-project-card .save-btn,
+  .trend-card-actions button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .trend-summary-source button {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .discovery-edition .project-exhibit.trend-project-card {
+    transition: none;
+  }
+}

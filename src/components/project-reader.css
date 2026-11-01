@@ -1,0 +1,556 @@
+/* Content-first reading; leave the editor's internal interface alone. */
+.readable-project {
+  max-width: 1104px;
+  margin: 0 auto;
+  padding: 8px 0 30px;
+}
+.reader-topline,
+.reader-topline > div,
+.reader-topline a,
+.reader-topline button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reader-topline {
+  justify-content: space-between;
+  color: var(--secondary);
+  font-size: 13px;
+}
+.reader-topline > div {
+  gap: 24px;
+}
+.reader-topline a,
+.reader-topline button {
+  min-height: 44px;
+}
+.reader-topline a:hover,
+.reader-topline button:hover {
+  color: var(--forest);
+}
+.reader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 24px 0 32px;
+}
+.reader-header h1 {
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.15;
+  font-weight: 650;
+  letter-spacing: -1.5px;
+  margin: 0 0 15px;
+}
+.reader-header p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--secondary);
+  max-width: 650px;
+  margin: 0;
+}
+.reader-header > button {
+  flex-shrink: 0;
+}
+.readable-project .button {
+  min-height: 46px;
+  font-size: 14px;
+}
+.reader-tabs {
+  margin-bottom: 34px;
+}
+.reader-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 292px;
+  gap: clamp(32px, 6vw, 80px);
+  align-items: start;
+}
+.reader-copy {
+  max-width: 680px;
+}
+.reader-copy .reader-source-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--forest);
+  margin: 0 0 18px;
+}
+.reader-copy h2 {
+  font-size: 25px;
+  line-height: 1.5;
+  font-weight: 650;
+  margin: 0 0 12px;
+}
+.reader-copy section + section {
+  margin-top: 26px;
+}
+.reader-copy h3 {
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.5;
+  margin: 26px 0 10px;
+}
+.reader-copy p {
+  font-size: 16px;
+  line-height: 1.95;
+  color: var(--secondary);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.reader-copy .reader-citation {
+  margin-top: 25px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.reader-citation a {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  margin-left: 8px;
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.reader-start {
+  padding: 27px 25px 6px;
+  border-radius: 18px;
+  background: var(--feature-bg);
+  border: 1px solid var(--feature-border);
+}
+.reader-start > svg {
+  color: var(--feature-accent);
+  margin-bottom: 14px;
+}
+.reader-start h2 {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.6;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.reader-start p {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--secondary);
+  margin: 0 0 20px;
+}
+.reader-start-links {
+  margin-top: 24px;
+}
+.reader-start-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 18px 0;
+  border-top: 1px solid var(--feature-border);
+  font-size: 14px;
+}
+.reader-start-links small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--secondary);
+  margin-top: 4px;
+}
+.reader-start-links a > svg {
+  flex-shrink: 0;
+  color: var(--feature-accent);
+}
+.reader-practice {
+  margin-top: 48px;
+  padding-top: 34px;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 105px;
+}
+.reader-practice:focus-visible {
+  outline: 2px solid var(--border);
+  outline-offset: 8px;
+}
+.reader-practice-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.reader-practice-heading h2 {
+  font-size: 25px;
+  line-height: 1.5;
+  font-weight: 650;
+  margin: 0 0 10px;
+}
+.reader-practice-heading p {
+  color: var(--secondary);
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 0;
+}
+.reader-practice-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.reader-practice-actions > span {
+  color: var(--secondary);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.reader-formal {
+  margin-top: 34px;
+}
+.reader-formal > h2 {
+  font-size: 25px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  font-weight: 650;
+}
+.reader-formal > p {
+  font-size: 16px;
+  color: var(--secondary);
+  line-height: 1.9;
+  max-width: 760px;
+  margin: 0;
+}
+.reader-steps {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.reader-steps li {
+  display: flex;
+  gap: 12px;
+}
+@media (min-width: 821px) {
+  .reader-steps--many {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.reader-steps li > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--sage);
+  color: var(--forest);
+  font-size: 13px;
+}
+.reader-steps h3 {
+  margin: 2px 0 9px;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 650;
+}
+.reader-steps p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--secondary);
+  line-height: 1.85;
+}
+.reader-canvas-preview {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.reader-example {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 30px;
+  background-color: var(--feature-bg);
+  background-image: radial-gradient(var(--feature-border) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.reader-example span {
+  padding: 24px 30px;
+  border: 1px solid var(--feature-accent);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 18px;
+  color: var(--text);
+}
+.reader-example > svg {
+  flex-shrink: 0;
+  color: var(--feature-accent);
+}
+.reader-canvas-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 26px;
+}
+.reader-canvas-caption p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--secondary);
+  margin: 0;
+}
+.reader-editor-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 360px;
+  padding: 30px;
+  text-align: center;
+  background: var(--feature-bg);
+  border-radius: 18px;
+}
+.reader-editor-loading h3,
+.reader-editor-loading p {
+  margin: 0;
+}
+.reader-practice-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 22px;
+}
+.reader-practice-notes p {
+  font-size: 13px;
+  color: var(--secondary);
+  line-height: 1.9;
+  margin: 0;
+}
+.reader-practice-notes strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.reader-practice-notes a {
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.reader-practice-notes a svg {
+  vertical-align: middle;
+}
+.reader-developer {
+  margin-top: 34px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+}
+.reader-developer summary {
+  padding: 16px 0;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--secondary);
+}
+.reader-developer p {
+  font-size: 15px;
+  line-height: 1.9;
+  max-width: 700px;
+  margin: 0 0 12px;
+  color: var(--secondary);
+}
+.reader-developer > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  font-size: 14px;
+  color: var(--forest);
+}
+.readable-project .real-editor {
+  border-radius: 16px;
+}
+.readable-project .real-editor-actions,
+.readable-project .real-editor-footer {
+  padding: 14px 18px;
+  font-size: 13px;
+}
+.readable-project .real-editor-actions button {
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+.readable-project .real-editor-footer {
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.readable-project .excalidraw-host {
+  height: 620px;
+}
+.readable-project .reader-facts {
+  max-width: 900px;
+  padding: 28px;
+}
+.readable-project .reader-facts > p,
+.readable-project .reader-facts dt,
+.readable-project .reader-facts dd,
+.readable-project .reader-facts a {
+  font-size: 14px;
+}
+@media (max-width: 900px) {
+  .reader-overview {
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 30px;
+  }
+  .reader-start {
+    padding: 22px 20px 4px;
+  }
+  .reader-header p {
+    font-size: 16px;
+  }
+  .reader-steps {
+    gap: 18px;
+  }
+  .reader-example {
+    gap: 16px;
+  }
+  .reader-example span {
+    padding: 20px;
+  }
+}
+@media (max-width: 680px) {
+  .readable-project {
+    padding: 0 0 20px;
+  }
+  .reader-topline {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .reader-topline > div {
+    gap: 12px;
+  }
+  .reader-topline .glass-control {
+    --control-padding-inline: 12px;
+  }
+  .reader-topline {
+    flex-wrap: wrap;
+  }
+  .reader-topline svg {
+    width: 14px;
+  }
+  .reader-header {
+    display: block;
+    padding: 22px 0 24px;
+  }
+  .reader-header h1 {
+    font-size: 35px;
+    margin-bottom: 12px;
+  }
+  .reader-header > button {
+    margin-top: 18px;
+  }
+  .reader-tabs {
+    margin-bottom: 26px;
+  }
+  .reader-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .reader-copy h2 {
+    font-size: 23px;
+  }
+  .reader-copy h3 {
+    margin-top: 22px;
+  }
+  .reader-copy p {
+    line-height: 1.9;
+  }
+  .reader-start {
+    width: 100%;
+    padding: 22px 24px 4px;
+  }
+  .reader-start > svg {
+    display: none;
+  }
+  .reader-start-links {
+    margin-top: 20px;
+  }
+  .reader-start h2 {
+    font-size: 20px;
+  }
+  .reader-practice {
+    margin-top: 32px;
+    padding-top: 26px;
+    scroll-margin-top: 95px;
+  }
+  .reader-practice-heading {
+    display: block;
+  }
+  .reader-practice-heading h2 {
+    font-size: 23px;
+  }
+  .reader-practice-actions {
+    justify-content: space-between;
+    margin-top: 18px;
+  }
+  .reader-steps {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin: 24px 0;
+  }
+  .reader-steps p {
+    font-size: 15px;
+  }
+  .reader-example {
+    min-height: 150px;
+    padding: 22px 12px;
+    gap: 8px;
+  }
+  .reader-example span {
+    font-size: 14px;
+    padding: 19px 8px;
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .reader-example > svg {
+    width: 16px;
+  }
+  .reader-canvas-caption {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+  }
+  .reader-practice-notes {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .readable-project .real-editor-actions {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+  }
+  .readable-project .real-editor-actions > div {
+    justify-content: space-between;
+  }
+  .readable-project .real-editor-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+  .readable-project .real-editor-actions > span {
+    line-height: 1.8;
+    align-items: flex-start;
+  }
+  .readable-project .real-editor-actions > span svg {
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .readable-project .excalidraw-host {
+    height: 560px;
+  }
+  .readable-project .reader-facts {
+    padding: 20px;
+  }
+}

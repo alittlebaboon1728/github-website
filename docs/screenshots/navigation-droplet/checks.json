@@ -1,0 +1,146 @@
+{
+  "checks": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "light",
+      "width": 821,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 1
+    },
+    {
+      "theme": "light",
+      "width": 360,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "dark",
+      "width": 821,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 1
+    },
+    {
+      "theme": "dark",
+      "width": 360,
+      "stable": true,
+      "overflow": false,
+      "alignmentError": 0
+    }
+  ],
+  "frames": [
+    {
+      "theme": "light",
+      "progress": 0,
+      "matrix": "matrix(1, 0, 0, 1, 0, 0)"
+    },
+    {
+      "theme": "light",
+      "progress": 0.42,
+      "matrix": "matrix(1.22, 0, 0, 0.9076, 187.86, 0)"
+    },
+    {
+      "theme": "light",
+      "progress": 0.76,
+      "matrix": "matrix(0.97, 0, 0, 1.025, 307.545, 0)"
+    },
+    {
+      "theme": "light",
+      "progress": 1,
+      "matrix": "matrix(1, 0, 0, 1, 303, 0)"
+    },
+    {
+      "theme": "dark",
+      "progress": 0,
+      "matrix": "matrix(1, 0, 0, 1, 0, 0)"
+    },
+    {
+      "theme": "dark",
+      "progress": 0.42,
+      "matrix": "matrix(1.22, 0, 0, 0.9076, 187.86, 0)"
+    },
+    {
+      "theme": "dark",
+      "progress": 0.76,
+      "matrix": "matrix(0.97, 0, 0, 1.025, 307.545, 0)"
+    },
+    {
+      "theme": "dark",
+      "progress": 1,
+      "matrix": "matrix(1, 0, 0, 1, 303, 0)"
+    }
+  ],
+  "errors": [],
+  "fixtures": true
+}

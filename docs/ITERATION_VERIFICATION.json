@@ -1,0 +1,392 @@
+{
+  "capturedAt": "2026-10-31T13:30:28.618Z",
+  "base": "http://127.0.0.1:5173",
+  "endpoints": [
+    {
+      "name": "status",
+      "status": 200,
+      "source": "live",
+      "fetchedAt": "2026-10-31T13:30:18.094Z",
+      "state": {
+        "aiConfigured": false,
+        "persistence": true
+      }
+    },
+    {
+      "name": "activity",
+      "status": 200,
+      "source": "live",
+      "fetchedAt": "2026-10-31T13:30:19.169Z",
+      "count": 89
+    },
+    {
+      "name": "blogs",
+      "status": 200,
+      "source": "live",
+      "fetchedAt": "2026-10-31T13:30:19.436Z",
+      "count": 56,
+      "state": [
+        {
+          "id": "github",
+          "name": "GitHub Blog · Open Source",
+          "url": "https://github.blog/open-source/feed/",
+          "fetchedAt": "2026-10-31T13:30:19.420Z",
+          "status": "live",
+          "persistence": true
+        },
+        {
+          "id": "vscode",
+          "name": "Visual Studio Code",
+          "url": "https://code.visualstudio.com/feed.xml",
+          "fetchedAt": "2026-10-31T13:30:19.362Z",
+          "status": "live",
+          "persistence": true
+        }
+      ]
+    },
+    {
+      "name": "trends",
+      "status": 200,
+      "source": "live",
+      "fetchedAt": "2026-10-31T13:30:20.522Z",
+      "count": 30,
+      "state": {
+        "ready": false,
+        "persistence": true
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "page": "home",
+      "theme": "light",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "light",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "light",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "light",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "light",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "light",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "light",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "light",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "light",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "light",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "light",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "light",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "light",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "light",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "light",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "light",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "light",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "light",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "light",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "light",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "dark",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "dark",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "dark",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "dark",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "home",
+      "theme": "dark",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "dark",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "dark",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "dark",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "dark",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "trends",
+      "theme": "dark",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "dark",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "dark",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "dark",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "dark",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "history",
+      "theme": "dark",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "dark",
+      "width": 360,
+      "actualWidth": 360,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "dark",
+      "width": 390,
+      "actualWidth": 390,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "dark",
+      "width": 768,
+      "actualWidth": 768,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "dark",
+      "width": 1024,
+      "actualWidth": 1024,
+      "fits": true
+    },
+    {
+      "page": "blogs",
+      "theme": "dark",
+      "width": 1440,
+      "actualWidth": 1440,
+      "fits": true
+    }
+  ],
+  "pageErrors": [],
+  "automatedTests": {
+    "build": "passed",
+    "server": 17,
+    "browser": 22,
+    "apiFixtures": "Deterministic test responses; no real model configured"
+  },
+  "production": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "path": "/project-media/rea.webp",
+      "status": 200,
+      "contentType": "image/webp"
+    },
+    {
+      "path": "/api/observatory/status",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/observatory/activity",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "count": 91
+    },
+    {
+      "path": "/api/observatory/blogs",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "count": 56
+    },
+    {
+      "path": "/api/observatory/trends",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "count": 30
+    },
+    {
+      "path": "/api/observatory/recommend",
+      "status": 503
+    },
+    {
+      "page": "production-blog",
+      "articles": 10,
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,525 @@
+/* Lens 1.1.0 materials + site-specific theme. Original MIT source: vendor/lens/. */
+:root {
+  --glass-fill: #ffffff70;
+  --glass-hover-fill: #ffffffa3;
+  --glass-edge: #ffffffc9;
+  --glass-low-edge: #a3b5a04a;
+  --glass-light: #ffffffb8;
+  --glass-glint: #ffffff95;
+  --glass-shadow-color: #344d3a12;
+  --glass-selected: #d0e1d0a8;
+  --glass-sheet: #f7faf4e8;
+  --glass-shadow:
+    inset 0 1px 0 var(--glass-light), inset 1px 0 0 #ffffff45,
+    inset 0 -1px 0 var(--glass-low-edge),
+    0 8px 24px -12px var(--glass-shadow-color);
+  --glass-reflection:
+    radial-gradient(
+      ellipse 160px 100px at var(--glass-x, 20%) var(--glass-y, 0%),
+      var(--glass-glint),
+      transparent 100%
+    ),
+    linear-gradient(145deg, #ffffff45, #ffffff08 45%, #a5bca20b);
+  --lg-color-focus: var(--forest);
+  --lg-font-family: Manrope, "Microsoft YaHei", sans-serif;
+  --lg-surface-fallback: var(--glass-fill);
+  --lg-surface-shadow: var(--glass-shadow);
+}
+[data-theme="dark"] {
+  --glass-fill: #33403968;
+  --glass-hover-fill: #4b5d4985;
+  --glass-edge: #ddebd52e;
+  --glass-low-edge: #00000045;
+  --glass-light: #efffe330;
+  --glass-glint: #d4ead51a;
+  --glass-shadow-color: #00000065;
+  --glass-selected: #66805c60;
+  --glass-sheet: #252f26f0;
+  --glass-reflection:
+    radial-gradient(
+      ellipse 160px 100px at var(--glass-x, 20%) var(--glass-y, 0%),
+      var(--glass-glint),
+      transparent 100%
+    ),
+    linear-gradient(145deg, #c4dec210, #ffffff02 45%, #809d8308);
+  --glass-shadow:
+    inset 0 1px 0 var(--glass-light), inset 1px 0 0 #ffffff0d,
+    inset 0 -1px 0 var(--glass-low-edge),
+    0 8px 24px -12px var(--glass-shadow-color);
+}
+.observatory-shell.discovery-edition {
+  background: transparent;
+  isolation: isolate;
+}
+.observatory-shell.discovery-edition::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 4% 8%, #dce9da80, transparent 48%),
+    radial-gradient(ellipse at 95% 40%, #edddc270, transparent 45%),
+    radial-gradient(ellipse at 40% 100%, #d4e5e370, transparent 50%),
+    var(--page);
+}
+[data-theme="dark"] .observatory-shell.discovery-edition::before {
+  background:
+    radial-gradient(ellipse at 4% 8%, #314a3040, transparent 48%),
+    radial-gradient(ellipse at 95% 40%, #53473630, transparent 45%),
+    radial-gradient(ellipse at 40% 100%, #25443e40, transparent 50%),
+    var(--page);
+}
+
+/* Native controls keep their semantics and existing sizes. */
+.observatory-shell.discovery-edition
+  :is(button, a.button, .site-navigation a, .header-github):not(
+    :where(
+      .excalidraw *,
+      .gallery-title,
+      .trend-summary,
+      .trend-card-cover,
+      .ranking-project button
+    )
+  ) {
+  border: 1px solid var(--glass-edge);
+  border-bottom-color: var(--glass-low-edge);
+  border-radius: 14px;
+  background: var(--glass-reflection), var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(12px) saturate(1.35);
+  backdrop-filter: blur(12px) saturate(1.35);
+  transition:
+    background-color var(--lg-duration-fast) ease,
+    border-color var(--lg-duration-fast) ease,
+    box-shadow var(--lg-duration-normal) ease,
+    color var(--lg-duration-fast) ease;
+}
+.observatory-shell.discovery-edition
+  :is(button, a.button, .site-navigation a, .header-github):not(
+    :where(
+      .excalidraw *,
+      .gallery-title,
+      .trend-summary,
+      .trend-card-cover,
+      .ranking-project button
+    )
+  ):hover {
+  background-color: var(--glass-hover-fill);
+  border-color: color-mix(in srgb, var(--forest) 23%, var(--glass-edge));
+  box-shadow:
+    var(--glass-shadow),
+    0 5px 18px -10px var(--glass-shadow-color);
+}
+.observatory-shell.discovery-edition
+  :is(button, a.button, .site-navigation a)[data-jelly] {
+  transform: var(--jelly-matrix, matrix(1, 0, 0, 1, 0, 0));
+  transform-origin: center;
+}
+.observatory-shell.discovery-edition :is(button, a):focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+}
+.observatory-shell.discovery-edition
+  :is(
+    .primary-button,
+    .quick-topics button.active,
+    .content-tabs button[aria-pressed="true"],
+    .persona-tabs button.active,
+    .detail-tabs button.active,
+    .browse-display button[aria-pressed="true"],
+    .board-switcher button[aria-pressed="true"],
+    .save-btn.saved,
+    .site-navigation a.selected,
+    .project-search-menu button[aria-checked="true"]
+  ) {
+  background: var(--glass-reflection), var(--glass-selected);
+  border-color: color-mix(in srgb, var(--forest) 28%, var(--glass-edge));
+  color: var(--forest);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 0 14px color-mix(in srgb, var(--sage) 48%, transparent);
+}
+.observatory-shell.discovery-edition :is(button, a).button.primary-button {
+  background: linear-gradient(145deg, #759474, #415c46 65%, #36533e);
+  border-color: #acc6a877;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 1px #ffffff7a,
+    inset 0 -1px 2px #142d2260,
+    0 6px 16px #344d3a24;
+}
+[data-theme="dark"]
+  .observatory-shell.discovery-edition
+  :is(button, a).button.primary-button {
+  background: linear-gradient(145deg, #718969, #425c42 70%);
+  color: #f5faef;
+}
+.observatory-shell.discovery-edition .text-action {
+  padding: 5px 11px;
+}
+.observatory-shell.discovery-edition :is(.load-more, .quick-topics button) {
+  border-radius: 999px;
+}
+.observatory-shell.discovery-edition .save-btn {
+  opacity: 1;
+}
+.observatory-shell.discovery-edition .site-header {
+  background: color-mix(in srgb, var(--page) 68%, transparent);
+  border-bottom-color: var(--glass-edge);
+  box-shadow: 0 1px 0 var(--glass-low-edge);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+  backdrop-filter: blur(24px) saturate(1.3);
+}
+.observatory-shell.discovery-edition .site-navigation {
+  gap: 6px;
+}
+.observatory-shell.discovery-edition .site-navigation a {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.observatory-shell.discovery-edition .site-navigation a.selected::after {
+  display: none;
+}
+.observatory-shell.discovery-edition .header-search {
+  min-height: 40px;
+  padding: 0 11px;
+  gap: 9px;
+}
+.observatory-shell.discovery-edition .header-github {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+}
+.observatory-shell.discovery-edition
+  :is(.content-tabs, .detail-tabs, .persona-tabs) {
+  border: 0;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.observatory-shell.discovery-edition
+  :is(.content-tabs, .detail-tabs, .persona-tabs)
+  > button {
+  padding: 0 17px;
+  border-radius: 999px;
+}
+.observatory-shell.discovery-edition .quick-topics {
+  gap: 7px;
+}
+.observatory-shell.discovery-edition .browse-display {
+  gap: 5px;
+  border: 0;
+  background: transparent;
+}
+
+/* Shared panel material; content remains opaque and sharply rendered. */
+.observatory-shell.discovery-edition
+  :is(
+    .project-exhibit.trend-project-card,
+    .product-spotlight,
+    .spotlight-workbench,
+    .audience-card,
+    .understand-card,
+    .reading-note,
+    .repository-facts,
+    .editorial-review,
+    .requirement-understanding,
+    .recommendation-item,
+    .persona-content,
+    .history-empty,
+    .gh-pulse-chart-tooltip
+  ) {
+  border: 1px solid var(--glass-edge);
+  border-bottom-color: var(--glass-low-edge);
+  border-radius: 22px;
+  background: var(--glass-reflection), var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+}
+.observatory-shell.discovery-edition .project-exhibit.trend-project-card:hover {
+  border-color: color-mix(in srgb, var(--forest) 25%, var(--glass-edge));
+  box-shadow:
+    var(--glass-shadow),
+    0 12px 32px -22px var(--forest);
+}
+.observatory-shell.discovery-edition
+  .recommendation-item
+  .project-exhibit.trend-project-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.observatory-shell.discovery-edition .trend-card-content {
+  min-height: 0;
+  padding: 20px 22px 13px;
+}
+.observatory-shell.discovery-edition .trend-card-heading {
+  margin-bottom: 15px;
+}
+.observatory-shell.discovery-edition .spotlight-copy :is(h2, h3) {
+  color: var(--text);
+}
+.observatory-shell.discovery-edition
+  :is(
+    .spotlight-copy p,
+    .spotlight-label,
+    .workbench-top,
+    .spotlight-topics button
+  ) {
+  color: var(--secondary);
+}
+/* The illustrated whiteboard is a light sheet in both application themes. */
+.observatory-shell.discovery-edition .board-switcher {
+  --forest: #3d5142;
+  --glass-fill: #ffffff88;
+  --glass-hover-fill: #eef4eccc;
+  --glass-edge: #ffffffde;
+  --glass-low-edge: #a6b4a050;
+  --glass-light: #ffffffdd;
+  --glass-selected: #d0e1d0cc;
+  --glass-reflection: linear-gradient(145deg, #ffffff60, #ffffff10);
+  --glass-shadow:
+    inset 0 1px 0 #ffffffcc, inset 0 -1px 0 #a6b4a040, 0 3px 8px #344d3a12;
+}
+.observatory-shell.discovery-edition .board-switcher button {
+  color: #4e5264;
+}
+.observatory-shell.discovery-edition .trend-card-footer {
+  padding-top: 22px;
+}
+.observatory-shell.discovery-edition .trend-card-topics span {
+  background: var(--glass-fill);
+  border-color: var(--glass-low-edge);
+  box-shadow: inset 0 1px 0 var(--glass-light);
+}
+.observatory-shell.discovery-edition .trend-author-avatar {
+  border-radius: 11px;
+  box-shadow:
+    inset 0 1px 0 var(--glass-light),
+    0 2px 5px var(--glass-shadow-color);
+}
+.observatory-shell.discovery-edition .trend-summary-source {
+  gap: 7px;
+  margin-top: 0;
+  margin-bottom: 9px;
+}
+.observatory-shell.discovery-edition .trend-summary-source button {
+  padding: 3px 8px;
+  margin: 0;
+  border-radius: 999px;
+  font-size: 10px;
+}
+.observatory-shell.discovery-edition
+  :is(.trend-card-cover, .trend-summary, .gallery-title) {
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.observatory-shell.discovery-edition .trend-card-cover {
+  border-bottom-color: var(--glass-low-edge);
+}
+.observatory-shell.discovery-edition .trend-card-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+.observatory-shell.discovery-edition .ranking-row {
+  background: var(--glass-reflection), var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  border-bottom-color: var(--glass-low-edge);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 10px;
+  box-shadow: var(--glass-shadow);
+}
+.observatory-shell.discovery-edition
+  :is(.project-search-menu, .dialog, .toast) {
+  background: var(--glass-reflection), var(--glass-sheet);
+  border: 1px solid var(--glass-edge);
+  border-bottom-color: var(--glass-low-edge);
+  box-shadow:
+    var(--glass-shadow),
+    0 22px 70px #152c2025;
+  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+  backdrop-filter: blur(28px) saturate(1.3);
+}
+.observatory-shell.discovery-edition .project-search-menu {
+  padding: 7px;
+  border-radius: 19px;
+}
+.observatory-shell.discovery-edition .project-search-menu button {
+  margin-bottom: 3px;
+}
+.observatory-shell.discovery-edition .quick-read-dialog {
+  border-radius: 26px;
+}
+.observatory-shell.discovery-edition
+  :is(.quick-read-toolbar, .quick-read-actions) {
+  background: var(--glass-fill);
+}
+.observatory-shell.discovery-edition .dialog-shade {
+  background: #1b2b2336;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+.observatory-shell.discovery-edition
+  :is(
+    .select-filters select,
+    .content-filters select,
+    .content-filters input,
+    .search-mode,
+    .command-form input,
+    .command-mode select,
+    .followup-form input,
+    .add-condition input,
+    .add-condition select
+  ) {
+  background: var(--glass-reflection), var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  border-bottom-color: var(--glass-low-edge);
+  border-radius: 13px;
+  box-shadow: var(--glass-shadow);
+  color: var(--text);
+}
+.observatory-shell.discovery-edition select option {
+  background: var(--card);
+  color: var(--text);
+}
+
+/* The original Lens shader renders only this small surface, not the whole feed. */
+.observatory-shell.discovery-edition .project-search {
+  border-radius: 999px;
+  border-color: var(--glass-edge);
+  background: var(--glass-reflection), var(--glass-fill);
+  box-shadow:
+    var(--glass-shadow),
+    0 12px 28px -18px #344d3a42;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+}
+.observatory-shell.discovery-edition .project-search:focus-within {
+  border-color: color-mix(in srgb, var(--forest) 35%, var(--glass-edge));
+  box-shadow:
+    var(--glass-shadow),
+    0 0 0 3px color-mix(in srgb, var(--sage) 55%, transparent);
+}
+.observatory-shell.discovery-edition .project-search:hover {
+  box-shadow:
+    var(--glass-shadow),
+    0 12px 30px -16px #344d3a46;
+}
+.observatory-shell.discovery-edition .project-search input:focus-visible {
+  outline: none;
+}
+.observatory-shell.discovery-edition .project-search-icon {
+  border-radius: 50%;
+}
+.lens-search-material.lg-stage {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  background: var(--glass-fill);
+  pointer-events: none;
+}
+.lens-search-material .lg-canvas {
+  z-index: 0;
+  border-radius: inherit;
+}
+.lens-search-optic {
+  position: absolute;
+  inset: 1px;
+  border-radius: 999px;
+}
+
+/* Row spans preserve DOM and keyboard order, while images can change height. */
+.discovery-edition .project-grid.project-masonry:not(.project-list) {
+  grid-auto-rows: 1px;
+  row-gap: 0;
+  column-gap: 18px;
+  align-items: start;
+}
+.discovery-edition
+  .project-masonry:not(.project-list)
+  > :is(.project-card, .recommendation-item) {
+  grid-row-end: span var(--card-span, 350);
+  align-self: start;
+}
+.discovery-edition .project-grid.project-masonry.project-list {
+  gap: 16px;
+  grid-auto-rows: auto;
+}
+@media (max-width: 1050px) and (min-width: 821px) {
+  .observatory-shell.discovery-edition .site-navigation a {
+    padding: 0 9px;
+    font-size: 11px;
+  }
+  .observatory-shell.discovery-edition .site-header-inner {
+    gap: 14px;
+  }
+}
+@media (max-width: 820px) {
+  .observatory-shell.discovery-edition .site-navigation.mobile-open {
+    background: var(--glass-sheet);
+    padding: 10px;
+    border: 1px solid var(--glass-edge);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+  }
+  .observatory-shell.discovery-edition .site-navigation.mobile-open a {
+    min-height: 44px;
+  }
+}
+@media (max-width: 600px) {
+  .discovery-edition .project-grid.project-masonry:not(.project-list) {
+    grid-auto-rows: auto;
+    row-gap: 16px;
+  }
+  .discovery-edition
+    .project-masonry:not(.project-list)
+    > :is(.project-card, .recommendation-item) {
+    grid-row-end: auto;
+  }
+  .observatory-shell.discovery-edition .trend-card-content {
+    padding: 18px 18px 12px;
+  }
+  .observatory-shell.discovery-edition .quick-read-dialog {
+    border-radius: 22px 22px 0 0;
+  }
+  .observatory-shell.discovery-edition .ranking-row {
+    padding: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .observatory-shell.discovery-edition
+    :is(button, a.button, .site-navigation a)[data-jelly] {
+    transform: none;
+  }
+  .observatory-shell.discovery-edition :is(button, .button, .project-search) {
+    transition: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-fill: var(--card);
+    --glass-sheet: var(--card);
+    --glass-hover-fill: var(--soft);
+  }
+  .observatory-shell.discovery-edition .lens-search-material {
+    display: none;
+  }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --glass-fill: var(--card);
+    --glass-sheet: var(--card);
+  }
+}

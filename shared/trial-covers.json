@@ -1,0 +1,26 @@
+{
+  "excalidraw/excalidraw": {
+    "layout": "canvas",
+    "caption": "用图形和连线，把想法说清楚",
+    "inputLabel": "脑海里的想法",
+    "input": "提出需求\n讨论方案\n确认结果",
+    "outputLabel": "一张清楚的流程图",
+    "output": "画图 · 连线 · 分享"
+  },
+  "markedjs/marked": {
+    "layout": "document",
+    "caption": "几行 Markdown，变成网页内容",
+    "inputLabel": "Markdown 文本",
+    "input": "# 本周更新\n**修复登录问题**",
+    "outputLabel": "网页中的样子",
+    "output": "本周更新\n修复登录问题"
+  },
+  "jqlang/jq": {
+    "layout": "data",
+    "caption": "从一大段 JSON 中，取出需要的值",
+    "inputLabel": "JSON 数据",
+    "input": "{\n  \"name\": \"demo\",\n  \"version\": \"1.4.2\"\n}",
+    "outputLabel": "提取 .version",
+    "output": "\"1.4.2\""
+  }
+}

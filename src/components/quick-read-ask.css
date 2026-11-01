@@ -1,0 +1,97 @@
+.quick-read-bottom {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+.discovery-edition .quick-read-bottom .quick-read-actions {
+  border-top: 0;
+  padding-top: 12px;
+}
+.discovery-edition .quick-read-ask {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 28px 0;
+  padding: 5px 6px 5px 15px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--soft);
+  transition:
+    border-color 180ms,
+    box-shadow 180ms;
+}
+.discovery-edition .quick-read-ask:focus-within {
+  border-color: color-mix(in srgb, var(--forest) 45%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--forest) 6%, transparent);
+}
+.quick-read-ask > svg {
+  flex-shrink: 0;
+  color: var(--forest);
+}
+.discovery-edition .quick-read-ask input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  box-shadow: none;
+  outline: none;
+}
+.quick-read-ask input::placeholder {
+  color: var(--muted);
+}
+.discovery-edition .quick-read-ask input:focus-visible {
+  outline: none;
+}
+.discovery-edition .quick-read-ask button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--forest);
+  color: var(--card);
+  transition:
+    opacity 180ms,
+    transform 180ms;
+}
+.quick-read-ask button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.quick-read-ask button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+.quick-read-ask button:not(:disabled):active {
+  transform: scale(0.96);
+}
+@media (max-width: 600px) {
+  .discovery-edition .quick-read-ask {
+    margin-inline: 16px;
+    gap: 9px;
+    padding-left: 12px;
+  }
+  .discovery-edition .quick-read-ask input {
+    font-size: 16px;
+  }
+}
+@media (pointer: coarse) {
+  .discovery-edition .quick-read-ask button {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quick-read-ask,
+  .quick-read-ask button {
+    transition: none !important;
+  }
+}

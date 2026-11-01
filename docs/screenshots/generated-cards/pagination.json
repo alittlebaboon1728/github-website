@@ -1,0 +1,17 @@
+{
+  "generated": 48,
+  "requests": [
+    {
+      "q": "is:public",
+      "sort": "stars",
+      "page": 1,
+      "count": 3
+    },
+    {
+      "q": "is:public",
+      "sort": "stars",
+      "page": 4,
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "checks": [
+    {
+      "theme": "light",
+      "width": 360,
+      "scrollWidth": 360,
+      "visualRight": 342,
+      "visualBottom": 777.609375,
+      "textX": 18,
+      "textY": 777.609375,
+      "cards": 12
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "scrollWidth": 390,
+      "visualRight": 368,
+      "visualBottom": 777.609375,
+      "textX": 22,
+      "textY": 777.609375,
+      "cards": 12
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "scrollWidth": 768,
+      "visualRight": 331.34375,
+      "visualBottom": 866.328125,
+      "textX": 331.34375,
+      "textY": 453.671875,
+      "cards": 12
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "visualRight": 416.1875,
+      "visualBottom": 786.953125,
+      "textX": 416.1875,
+      "textY": 396.890625,
+      "cards": 12
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "visualRight": 592.1875,
+      "visualBottom": 786.953125,
+      "textX": 592.1875,
+      "textY": 396.890625,
+      "cards": 12
+    },
+    {
+      "theme": "dark",
+      "width": 360,
+      "scrollWidth": 360,
+      "visualRight": 342,
+      "visualBottom": 777.609375,
+      "textX": 18,
+      "textY": 777.609375,
+      "cards": 12
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "scrollWidth": 390,
+      "visualRight": 368,
+      "visualBottom": 777.609375,
+      "textX": 22,
+      "textY": 777.609375,
+      "cards": 12
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "scrollWidth": 768,
+      "visualRight": 331.34375,
+      "visualBottom": 866.328125,
+      "textX": 331.34375,
+      "textY": 453.671875,
+      "cards": 12
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "visualRight": 416.1875,
+      "visualBottom": 786.953125,
+      "textX": 416.1875,
+      "textY": 396.890625,
+      "cards": 12
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "visualRight": 592.1875,
+      "visualBottom": 786.953125,
+      "textX": 592.1875,
+      "textY": 396.890625,
+      "cards": 12
+    }
+  ],
+  "api": [
+    {
+      "query": "is:public",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 314187125
+    },
+    {
+      "query": "topic:artificial-intelligence",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 52850
+    },
+    {
+      "query": "topic:developer-tools",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 86729
+    },
+    {
+      "query": "topic:design-tools",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 1664
+    },
+    {
+      "query": "topic:web-application",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 15367
+    },
+    {
+      "query": "topic:database",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 53717
+    },
+    {
+      "query": "is:public",
+      "status": 200,
+      "source": "cache",
+      "returned": 12,
+      "total": 314187125
+    }
+  ],
+  "errors": []
+}

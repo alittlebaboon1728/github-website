@@ -1,0 +1,65 @@
+{
+  "repo": "markedjs/marked",
+  "model": "gpt-6.1-sol",
+  "templateVersion": "readable-trial-v1",
+  "generatedAt": "2026-11-01T06:08:52.680Z",
+  "cacheUnchanged": true,
+  "checks": [
+    {
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "exercise": {
+        "overflow": false,
+        "filter": "blur(18px) saturate(1.25)",
+        "color": "rgba(255, 255, 255, 0.44)",
+        "buttonHeight": 48.390625
+      },
+      "posts": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "exercise": {
+        "overflow": false,
+        "filter": "blur(18px) saturate(1.25)",
+        "color": "rgba(255, 255, 255, 0.44)",
+        "buttonHeight": 48.390625
+      },
+      "posts": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "exercise": {
+        "overflow": false,
+        "filter": "blur(18px) saturate(1.25)",
+        "color": "rgba(255, 255, 255, 0.11)",
+        "buttonHeight": 48.390625
+      },
+      "posts": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "exercise": {
+        "overflow": false,
+        "filter": "blur(18px) saturate(1.25)",
+        "color": "rgba(255, 255, 255, 0.11)",
+        "buttonHeight": 48.390625
+      },
+      "posts": [],
+      "errors": [],
+      "passed": true
+    }
+  ]
+}

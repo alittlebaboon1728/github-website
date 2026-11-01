@@ -1,0 +1,134 @@
+[
+  {
+    "theme": "light",
+    "width": 360,
+    "contentWidth": 330,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "light",
+    "width": 390,
+    "contentWidth": 360,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "name": "editor",
+    "theme": "light",
+    "width": 390,
+    "contentWidth": 360,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "light",
+    "width": 768,
+    "contentWidth": 738,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "light",
+    "width": 1024,
+    "contentWidth": 994,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "light",
+    "width": 1440,
+    "contentWidth": 1410,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "name": "editor",
+    "theme": "light",
+    "width": 1440,
+    "contentWidth": 1410,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 360,
+    "contentWidth": 330,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 390,
+    "contentWidth": 360,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "name": "editor",
+    "theme": "dark",
+    "width": 390,
+    "contentWidth": 360,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 768,
+    "contentWidth": 738,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 1024,
+    "contentWidth": 994,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 1440,
+    "contentWidth": 1410,
+    "fontSize": "16px",
+    "players": 0,
+    "modelPosts": 0,
+    "errors": [],
+    "passed": true
+  },
+  {
+    "name": "editor",
+    "theme": "dark",
+    "width": 1440,
+    "contentWidth": 1410,
+    "errors": [],
+    "passed": true
+  }
+]

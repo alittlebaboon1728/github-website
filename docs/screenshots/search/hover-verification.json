@@ -1,0 +1,18 @@
+[
+  {
+    "theme": "light",
+    "hovered": {
+      "y": -3,
+      "shadow": "rgba(255, 255, 255, 0.933) 0px 1px 0px 0px inset, rgba(52, 66, 43, 0.08) 0px 14px 36px 0px, color(srgb 0.909804 0.929412 0.87451 / 0.4) 0px 0px 0px 3px"
+    },
+    "reduced": "none"
+  },
+  {
+    "theme": "dark",
+    "hovered": {
+      "y": -3,
+      "shadow": "rgba(255, 255, 255, 0.11) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.145) 0px 14px 36px 0px, rgba(190, 211, 164, 0.03) 0px 0px 0px 3px"
+    },
+    "reduced": "none"
+  }
+]

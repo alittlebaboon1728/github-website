@@ -1,0 +1,37 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "shadow": "rgba(255, 255, 255, 0.32) 0px 0.5px 0px 0px inset, rgba(48, 61, 81, 0.043) 0px -0.5px 0px 0px inset, rgba(31, 41, 57, 0.1) 0px 3px 9px -4px",
+      "border": "rgba(255, 255, 255, 0.27)",
+      "filter": "blur(12px) saturate(1.5) brightness(1.025) url(\"#lgh-2-6\")"
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "shadow": "rgba(255, 255, 255, 0.32) 0px 0.5px 0px 0px inset, rgba(48, 61, 81, 0.043) 0px -0.5px 0px 0px inset, rgba(31, 41, 57, 0.1) 0px 3px 9px -4px",
+      "border": "rgba(255, 255, 255, 0.27)",
+      "filter": "blur(12px) saturate(1.5) brightness(1.025) url(\"#lgh-2-20\")"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "shadow": "rgba(255, 255, 255, 0.1) 0px 0.5px 0px 0px inset, rgba(0, 0, 0, 0.333) 0px -0.5px 0px 0px inset, rgba(0, 0, 0, 0.27) 0px 3px 9px -4px",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "filter": "blur(12px) saturate(1.5) brightness(1.08) url(\"#lgh-2-6\")"
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "shadow": "rgba(255, 255, 255, 0.1) 0px 0.5px 0px 0px inset, rgba(0, 0, 0, 0.333) 0px -0.5px 0px 0px inset, rgba(0, 0, 0, 0.27) 0px 3px 9px -4px",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "filter": "blur(12px) saturate(1.5) brightness(1.08) url(\"#lgh-2-20\")"
+    }
+  ]
+}

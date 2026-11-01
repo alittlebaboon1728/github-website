@@ -1,0 +1,82 @@
+[
+  {
+    "theme": "light",
+    "width": 390,
+    "iconCount": 6,
+    "overflow": false,
+    "errors": [],
+    "posts": 0,
+    "pickerClosing": {
+      "display": "block",
+      "opacity": 0.739538,
+      "open": false
+    },
+    "menuClosing": {
+      "hidden": true,
+      "inert": true,
+      "display": "block",
+      "opacity": 0.531522
+    },
+    "passed": true
+  },
+  {
+    "theme": "light",
+    "width": 1440,
+    "iconCount": 6,
+    "overflow": false,
+    "errors": [],
+    "posts": 0,
+    "pickerClosing": {
+      "display": "block",
+      "opacity": 0.236268,
+      "open": false
+    },
+    "menuClosing": {
+      "hidden": true,
+      "inert": true,
+      "display": "block",
+      "opacity": 0.529601
+    },
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 390,
+    "iconCount": 6,
+    "overflow": false,
+    "errors": [],
+    "posts": 0,
+    "pickerClosing": {
+      "display": "block",
+      "opacity": 0.737676,
+      "open": false
+    },
+    "menuClosing": {
+      "hidden": true,
+      "inert": true,
+      "display": "block",
+      "opacity": 0.533692
+    },
+    "passed": true
+  },
+  {
+    "theme": "dark",
+    "width": 1440,
+    "iconCount": 6,
+    "overflow": false,
+    "errors": [],
+    "posts": 0,
+    "pickerClosing": {
+      "display": "block",
+      "opacity": 0.530654,
+      "open": false
+    },
+    "menuClosing": {
+      "hidden": true,
+      "inert": true,
+      "display": "block",
+      "opacity": 0.530723
+    },
+    "passed": true
+  }
+]
