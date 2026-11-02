@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { Repository } from "../catalog";
 import { getProjectGuide } from "../projectGuides";
+import { projectImageSizes } from "../projectMedia";
+import type { ProjectMedia as Media } from "../projectMedia";
 
-type Media = { image: { url: string; alt: string; sourceUrl: string } | null };
 const cache = new Map<string, Promise<Media>>();
+const resolved = new Map<string, Media>();
 function loadMedia(repo: Repository) {
   const key = repo.fullName.toLowerCase();
   if (!cache.has(key)) {
@@ -17,7 +19,17 @@ function loadMedia(repo: Repository) {
           const value = await response.json();
           return value.data as Media;
         })
-        .catch(() => ({ image: null })),
+        .catch(() => ({ image: null, pending: true }))
+        .then((value) => {
+          resolved.set(key, value);
+          if (value.pending) {
+            cache.delete(key);
+            resolved.delete(key);
+          }
+          if (resolved.size > 500)
+            resolved.delete(resolved.keys().next().value!);
+          return value;
+        }),
     );
     if (cache.size > 500) cache.delete(cache.keys().next().value!);
   }
@@ -42,6 +54,15 @@ function RepositoryImage({
   onPreview?: () => void;
 }) {
   const known = getProjectGuide(repo)?.image;
+  const supplied: Media | undefined = known
+    ? {
+        image: {
+          url: known,
+          alt: `${repo.name} 项目官方截图`,
+          sourceUrl: `${repo.url}#readme`,
+        },
+      }
+    : repo.media;
   const [media, setMedia] = useState<Media | null>(
     known
       ? {
@@ -51,49 +72,60 @@ function RepositoryImage({
             sourceUrl: `${repo.url}#readme`,
           },
         }
-      : null,
+      : resolved.get(repo.fullName.toLowerCase()) || null,
   );
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState("");
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    if (known) return;
+    if (supplied) return;
     let active = true;
+    let retry: ReturnType<typeof setTimeout>;
+    let attempts = 0;
+    const load = () =>
+      void loadMedia(repo).then((value) => {
+        if (!active) return;
+        setMedia(value);
+        if (value.pending && attempts++ < 2) retry = setTimeout(load, 30_000);
+      });
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
-        void loadMedia(repo).then((value) => {
-          if (active) setMedia(value);
-        });
+        load();
       },
       { rootMargin: "300px" },
     );
     if (ref.current) observer.observe(ref.current);
     return () => {
       active = false;
+      clearTimeout(retry);
       observer.disconnect();
     };
-  }, [repo.fullName, known]);
-  if (!media?.image || failed)
+  }, [repo.fullName, known, repo.media]);
+  const selected = supplied || media;
+  if (!selected?.image || failed === selected.image.url)
     return (
       <span ref={ref} className="project-media-sentinel" aria-hidden="true" />
     );
   const image = (
     <img
-      src={media.image.url}
-      alt={media.image.alt || `${repo.name} README 项目图片`}
+      src={selected.image.url}
+      srcSet={selected.image.srcSet}
+      sizes={selected.image.srcSet ? projectImageSizes : undefined}
+      width={selected.image.width}
+      height={selected.image.height}
+      alt={selected.image.alt || `${repo.name} README 项目图片`}
       loading="lazy"
+      decoding="async"
       referrerPolicy="no-referrer"
       onLoad={(event) => {
         const { naturalWidth, naturalHeight } = event.currentTarget;
-        if (
-          naturalWidth < 240 ||
-          naturalHeight < 100 ||
-          naturalWidth / naturalHeight > 6
-        )
-          setFailed(true);
+        const width = selected.image!.width || naturalWidth;
+        const height = selected.image!.height || naturalHeight;
+        if (width < 240 || height < 100 || width / height > 6)
+          setFailed(selected.image!.url);
       }}
-      onError={() => setFailed(true)}
+      onError={() => setFailed(selected.image!.url)}
     />
   );
   return onPreview ? (
@@ -108,7 +140,7 @@ function RepositoryImage({
   ) : (
     <a
       className="trend-card-cover"
-      href={media.image.sourceUrl}
+      href={selected.image.sourceUrl}
       target="_blank"
       rel="noreferrer"
       title="查看项目图片来源"

@@ -23,9 +23,11 @@ export default function RecommendationReply({
   onPreview,
   onOpen,
   onRetry,
+  pending = false,
 }: ReplyActions & {
   result: ApiEnvelope<RecommendationData>;
   onRetry?: () => void;
+  pending?: boolean;
 }) {
   const data = result.data;
   if (data.answer)
@@ -94,7 +96,11 @@ export default function RecommendationReply({
       <div className="chat-result-meta">
         <span>
           {repos.length
-            ? `${repos.length} 个项目，看看有没有适合你的。`
+            ? data.partial
+              ? pending
+                ? `已找到 ${repos.length} 个有依据的项目，其他结果仍在核对。`
+                : `已保留 ${repos.length} 个已核实的项目，本次检索未全部完成。`
+              : `${repos.length} 个项目，看看有没有适合你的。`
             : "暂时没有找到符合条件、且能核实的项目。"}
         </span>
         <span className="chat-result-count">

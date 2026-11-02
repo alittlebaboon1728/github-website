@@ -32,7 +32,7 @@ export default function RepositoryCard({
   recommendationSummary?: string;
 }) {
   const [original, setOriginal] = useState(false);
-  const [avatarFailed, setAvatarFailed] = useState(false);
+  const [avatarFailed, setAvatarFailed] = useState("");
   const guide = getProjectGuide(repo);
   const generated = repo.generated;
   const summary = original
@@ -55,14 +55,15 @@ export default function RepositoryCard({
             rel="noreferrer"
             aria-label={`项目作者 ${repo.owner}`}
           >
-            {repo.avatar && !avatarFailed ? (
+            {repo.avatar && avatarFailed !== repo.avatar ? (
               <img
                 src={repo.avatar}
                 width="36"
                 height="36"
                 loading="lazy"
+                decoding="async"
                 alt=""
-                onError={() => setAvatarFailed(true)}
+                onError={() => setAvatarFailed(repo.avatar)}
               />
             ) : (
               <span>{repo.owner.slice(0, 1).toUpperCase()}</span>

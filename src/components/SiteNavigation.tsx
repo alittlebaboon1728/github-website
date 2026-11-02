@@ -13,10 +13,12 @@ export default function SiteNavigation({
   active,
   open,
   savedCount,
+  onIntent,
 }: {
   active: Section;
   open: boolean;
   savedCount: number;
+  onIntent?: (section: Section) => void;
 }) {
   const nav = useRef<HTMLElement>(null);
   const droplet = useRef<HTMLSpanElement>(null);
@@ -36,6 +38,9 @@ export default function SiteNavigation({
           href={`#/${section.id}`}
           className={active === section.id ? "selected" : ""}
           aria-current={active === section.id ? "page" : undefined}
+          onPointerEnter={() => onIntent?.(section.id)}
+          onFocus={() => onIntent?.(section.id)}
+          onTouchStart={() => onIntent?.(section.id)}
         >
           {section.label}
           {section.id === "saved" && savedCount > 0 && (

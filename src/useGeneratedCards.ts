@@ -27,7 +27,7 @@ export type CardJob = {
 type State = {
   key: string;
   pages: Page[];
-  job?: CardJob;
+  jobs: Record<string, CardJob>;
   busy: boolean;
   error: string;
   request: { page: number; count: number };
@@ -37,6 +37,7 @@ const cache = new Map<string, State>();
 const blank = (key: string): State => ({
   key,
   pages: [],
+  jobs: {},
   busy: true,
   error: "",
   request: { page: 1, count: 3 },
@@ -88,7 +89,7 @@ export function useGeneratedCards({
   useEffect(() => {
     if (!enabled) return;
     const controller = new AbortController();
-    let timer: ReturnType<typeof setTimeout>;
+    const timers = new Map<string, ReturnType<typeof setTimeout>>();
     let current = cache.get(key) || blank(key);
     const explicit = action?.key === key ? action : null;
     const commit = (next: State) => {
@@ -117,11 +118,12 @@ export function useGeneratedCards({
         );
       }
       const failed = job.pages.find((page) => page.state === "error");
+      const jobs = { ...current.jobs, [job.id]: job };
       commit({
         ...current,
-        job,
+        jobs,
         pages: [...pages.values()].sort((a, b) => a.number - b.number),
-        busy: job.state === "running",
+        busy: Object.values(jobs).some((job) => job.state === "running"),
         error: failed?.error || "",
       });
     };
@@ -129,8 +131,11 @@ export function useGeneratedCards({
       try {
         const job = await requestCardJob(`jobs/${id}`, controller.signal);
         accept(job);
-        if (job.state === "running")
-          timer = setTimeout(() => void poll(id), 1200);
+        if (!controller.signal.aborted && job.state === "running")
+          timers.set(
+            id,
+            setTimeout(() => void poll(id), 600),
+          );
       } catch (error) {
         if (!controller.signal.aborted)
           commit({
@@ -145,11 +150,17 @@ export function useGeneratedCards({
     };
     async function begin() {
       // Back navigation resumes an existing job instead of generating the first three pages again.
-      if ((!explicit || explicit.attempt === current.attempt) && current.job) {
+      if (
+        (!explicit || explicit.attempt === current.attempt) &&
+        Object.keys(current.jobs).length
+      ) {
         commit(current);
-        if (current.job.state === "running") void poll(current.job.id);
+        for (const job of Object.values(current.jobs))
+          if (job.state === "running") void poll(job.id);
         return;
       }
+      for (const job of Object.values(current.jobs))
+        if (job.state === "running") void poll(job.id);
       const request = explicit || { page: 1, count: 3 };
       commit({
         ...current,
@@ -166,8 +177,11 @@ export function useGeneratedCards({
           count: request.count,
         });
         accept(job);
-        if (job.state === "running")
-          timer = setTimeout(() => void poll(job.id), 500);
+        if (!controller.signal.aborted && job.state === "running")
+          timers.set(
+            job.id,
+            setTimeout(() => void poll(job.id), 100),
+          );
       } catch (error) {
         if (!controller.signal.aborted)
           commit({
@@ -183,7 +197,7 @@ export function useGeneratedCards({
     void begin();
     return () => {
       controller.abort();
-      clearTimeout(timer);
+      for (const timer of timers.values()) clearTimeout(timer);
     };
   }, [key, enabled, action, query, sort]);
   const current = state.key === key ? state : cache.get(key) || blank(key);
@@ -223,8 +237,10 @@ export function useGeneratedCards({
   );
   const hasMore = Boolean(
     last &&
-    !current.busy &&
-    !failedPage &&
+    !pages.some((page) =>
+      ["queued", "searching", "error"].includes(page.state),
+    ) &&
+    !(action?.key === key && action.page > last.number) &&
     last.items.length &&
     last.number < 84 &&
     last.number * 12 < Math.min(last.total, 1000),

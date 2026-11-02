@@ -39,6 +39,36 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
+test("queued carousel scrolls during a zero-width layout do not break navigation", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#/stories");
+  const carousel = page.getByRole("region", { name: "精选项目试用" });
+  await expect(carousel.locator(".trial-carousel-dot")).toHaveCount(3);
+  await carousel.locator(".trial-carousel-track").evaluate((node) => {
+    const element = node as HTMLElement;
+    element.style.display = "none";
+    element.dispatchEvent(new Event("scroll"));
+    element.dispatchEvent(new Event("scrollend"));
+    element.style.display = "";
+  });
+  await carousel.getByRole("button", { name: "查看 marked 试用横幅" }).click();
+  await expect(carousel.locator('[aria-hidden="false"] a')).toHaveAttribute(
+    "href",
+    "#/trial/markedjs/marked",
+  );
+  for (let index = 0; index < 3; index++) {
+    await page.locator('.site-navigation a[href="#/discover"]').click();
+    await page.getByRole("region", { name: "精选项目试用" }).waitFor();
+    await page.locator('.site-navigation a[href="#/stories"]').click();
+    await carousel.waitFor();
+  }
+  expect(errors).toEqual([]);
+});
+
 test("home and library share the carousel, project diagrams and working destinations", async ({
   page,
 }) => {
@@ -215,4 +245,72 @@ test("empty or unavailable catalogs keep the native trial usable", async ({
   );
   await page.getByRole("button", { name: "重新读取" }).click();
   await expect(page.locator(".trial-library-empty")).toBeVisible();
+});
+
+test("covers retain real sources and distinguish the native tool from generated teaching on small screens", async ({
+  page,
+}) => {
+  const fullTitle = "把零散的读书摘录和工作灵感整理为可以按标签查找的笔记";
+  await page.route("**/api/observatory/trials**", (route) =>
+    route.fulfill({
+      json: {
+        data: {
+          ...catalog,
+          trials: [
+            {
+              ...trial,
+              repo: "excalidraw/excalidraw",
+              name: "excalidraw",
+              kind: "interactive",
+              cover: undefined,
+            },
+            { ...trial, title: fullTitle, kind: "external", cover: undefined },
+          ],
+        },
+      },
+    }),
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/#/stories");
+  const native = page.locator('.trial-carousel-slide[aria-hidden="false"]');
+  await expect(native).toContainText("真实白板");
+  await expect(native.locator("a")).toHaveAttribute(
+    "href",
+    "#/project/excalidraw/excalidraw",
+  );
+  const teaching = page
+    .locator(".trial-library-card")
+    .filter({ hasText: "excalidraw/excalidraw" });
+  await expect(teaching).toContainText("交互教学");
+  await expect(teaching).not.toContainText("真实白板");
+  await expect(teaching).toHaveAttribute(
+    "href",
+    "#/trial/excalidraw/excalidraw",
+  );
+  const other = page
+    .locator(".trial-library-card")
+    .filter({ hasText: trial.repo });
+  await expect(other.getByRole("heading")).toHaveText(fullTitle);
+  await expect(other).toContainText("在线体验");
+  for (const width of [320, 768]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const card of await page.locator(".trial-library-card").all()) {
+      const bounds = await card.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const title = element.querySelector("h3")!.getBoundingClientRect();
+        return {
+          right: rect.right,
+          titleRight: title.right,
+          cardRight: rect.right,
+        };
+      });
+      expect(bounds.right).toBeLessThanOrEqual(width);
+      expect(bounds.titleRight).toBeLessThanOrEqual(bounds.cardRight);
+    }
+  }
+  await other.focus();
+  await expect(other).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`#/trial/${trial.repo}$`));
 });

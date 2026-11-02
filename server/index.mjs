@@ -4,8 +4,12 @@ import { resolve, extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { handleGitHubRequest } from "./github.mjs";
 import { createObservatory } from "./observatory.mjs";
+import { routeAdminPage } from "./admin.mjs";
 
-const observatory = createObservatory();
+const observatory = createObservatory({
+  ...process.env,
+  DISCOVERY_BACKGROUND: process.env.DISCOVERY_BACKGROUND || "on",
+});
 
 const root = fileURLToPath(new URL("../dist/", import.meta.url));
 const port = Number(process.env.PORT || 4173);
@@ -24,8 +28,9 @@ const mime = {
 };
 
 createServer(async (req, res) => {
+  if (routeAdminPage(req, res)) return;
   if (await observatory.handle(req, res)) return;
-  if (await handleGitHubRequest(req, res, { github: observatory.github }))
+  if (await handleGitHubRequest(req, res, { github: observatory.github, library: observatory.library, media: observatory.media }))
     return;
   try {
     const pathname = decodeURIComponent(
@@ -60,6 +65,7 @@ createServer(async (req, res) => {
   }
 }).listen(port, process.env.HOST || "0.0.0.0", () => {
   console.log(`Open Source Observatory: http://localhost:${port}`);
+  observatory.startBackground().catch(() => console.error("中文项目库初始化失败，已有页面仍可读取。"));
   // Collection is optional; visits also collect snapshots. Only one process should own the data directory.
   if (process.env.OBSERVATORY_COLLECT === "on") {
     observatory.collect();

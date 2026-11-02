@@ -429,6 +429,87 @@ test("search requests are paced and HTTP-date Retry-After produces a finite cool
   );
 });
 
+test("a different search can return public HTML during REST spacing, while warm batches stay cached", async () => {
+  let rest = 0,
+    web = 0;
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const github = createGitHubClient({
+    webInterval: 0,
+    wait: () => gate,
+    fetchImpl: async (target) => {
+      const url = new URL(target);
+      if (url.hostname === "api.github.com") {
+        rest++;
+        return json({
+          total_count: 36,
+          items: Array.from({ length: 36 }, (_, i) => repo(i + 1)),
+        });
+      }
+      web++;
+      return html(searchPage(Number(url.searchParams.get("p"))));
+    },
+  });
+  await github(query(1, "first"));
+  assert.equal((await github(query(1, "second"))).provider, "github-web");
+  assert.equal(
+    (await github(query(2, "first"))).data.items[0].full_name,
+    "sample/repo-13",
+  );
+  assert.equal(rest, 1);
+  assert.equal(web, 2);
+  release();
+});
+
+test("an unavailable public search never holds a ready REST response behind its timeout", async () => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const github = createGitHubClient({
+    wait: async () => {},
+    webInterval: 0,
+    fetchImpl: async (target) => {
+      if (new URL(target).hostname === "api.github.com")
+        return json({ total_count: 1, items: [repo()] });
+      await gate;
+      return html(searchPage(1, 1));
+    },
+  });
+  await github(query(1, "first"));
+  const next = await github(query(1, "second"));
+  release();
+  assert.equal(next.provider, "github-api");
+});
+
+test("slow raw README requests overlap within a bounded lane and coalesce duplicates", async () => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  let active = 0,
+    peak = 0,
+    calls = 0;
+  const github = client({
+    fetchImpl: async () => {
+      calls++;
+      peak = Math.max(peak, ++active);
+      await gate;
+      active--;
+      return new Response("Actual public documentation.");
+    },
+  });
+  const requests = [1, 2, 3, 1].map((id) => github.readPublicReadme(repo(id)));
+  for (let i = 0; i < 30 && calls < 3; i++)
+    await new Promise((resolve) => setImmediate(resolve));
+  release();
+  await Promise.all(requests);
+  assert.equal(calls, 3);
+  assert.equal(peak, 3);
+});
+
 test("search and web cooldowns survive service recreation without probing blocked hosts again", async () => {
   let calls = 0;
   const disk = store();

@@ -1,5 +1,6 @@
 import { getGitHubData, GitHubError } from "./github.mjs";
 import { boundedText } from "./storage.mjs";
+import { createTaskQueue } from "./task-queue.mjs";
 import {
   parsePublicRepository,
   parseRepositorySearch,
@@ -37,6 +38,7 @@ export function createGitHubClient({
   wait = delay,
   searchInterval = token ? 2100 : 6100,
   webInterval = 1000,
+  fastSearchFallback = true,
 } = {}) {
   const cache = new Map(),
     pending = new Map(),
@@ -46,7 +48,13 @@ export function createGitHubClient({
   const lanes = Object.fromEntries(
     ["search", "core", "web", "raw"].map((name) => [
       name,
-      { queue: Promise.resolve(), count: 0, next: 0, until: 0 },
+      {
+        queue: Promise.resolve(),
+        count: 0,
+        next: 0,
+        until: 0,
+        work: createTaskQueue(name === "raw" ? 4 : name === "core" ? 2 : 1),
+      },
     ]),
   );
   let initialized;
@@ -135,7 +143,7 @@ export function createGitHubClient({
   function limited(message, until) {
     return new GitHubError(message, 429, new Date(until).toISOString());
   }
-  async function scheduled(name, url, options = {}) {
+  async function scheduled(name, url, options = {}, scheduling = {}) {
     await init();
     const lane = lanes[name];
     if (lane.until > now())
@@ -143,25 +151,34 @@ export function createGitHubClient({
     if (lane.count >= 10)
       throw limited("读取请求较多，请稍后重试。", now() + MINUTE);
     lane.count++;
-    const task = lane.queue
-      .then(async () => {
-        if (lane.until > now())
-          throw limited("此数据源正在冷却，请稍后重试。", lane.until);
-        if (lane.next > now()) await wait(lane.next - now());
-        if (lane.until > now())
-          throw limited("此数据源正在冷却，请稍后重试。", lane.until);
-        lane.next =
-          now() +
-          (name === "search"
-            ? searchInterval
-            : name === "web"
-              ? webInterval
-              : 150);
-        const response = await fetchImpl(url, {
-          ...options,
-          redirect: "error",
-          signal: AbortSignal.timeout(12000),
+    const task = lane
+      .work(async () => {
+        let responsePromise;
+        const turn = lane.queue.then(async () => {
+          if (lane.until > now())
+            throw limited("此数据源正在冷却，请稍后重试。", lane.until);
+          if (lane.next > now()) await wait(lane.next - now());
+          if (lane.until > now())
+            throw limited("此数据源正在冷却，请稍后重试。", lane.until);
+          lane.next =
+            now() +
+            (name === "search"
+              ? searchInterval
+              : name === "web"
+                ? webInterval
+                : 150);
+          // Pace request starts, without serializing slow raw/core responses.
+          responsePromise = fetchImpl(url, {
+            ...options,
+            redirect: "error",
+            signal: AbortSignal.timeout(
+              name === "raw" ? 4000 : name === "search" ? 12000 : 10000,
+            ),
+          });
         });
+        lane.queue = turn.catch(() => {});
+        await turn;
+        const response = await responsePromise;
         if (
           [403, 429].includes(response.status) ||
           response.headers.get("x-ratelimit-remaining") === "0"
@@ -175,9 +192,8 @@ export function createGitHubClient({
             .catch(() => {});
         }
         return response;
-      })
+      }, scheduling)
       .finally(() => lane.count--);
-    lane.queue = task.catch(() => {});
     return task;
   }
   const restFetch = (url, options) =>
@@ -201,7 +217,7 @@ export function createGitHubClient({
     ...(warning ? { warning } : {}),
   });
 
-  async function webPage(path) {
+  async function webPage(path, scheduling) {
     if (pages.has(path) && now() - pages.get(path).at < 10 * MINUTE)
       return pages.get(path).value;
     if (pagePending.has(path)) return pagePending.get(path);
@@ -213,7 +229,7 @@ export function createGitHubClient({
             "User-Agent": "Open-Source-Observatory",
             Accept: "text/html",
           },
-        });
+        }, scheduling);
       } catch (error) {
         if (error instanceof GitHubError) throw error;
         throw new GitHubError("暂时无法读取 GitHub 公开网页。", 502);
@@ -248,9 +264,9 @@ export function createGitHubClient({
     pagePending.set(path, operation);
     return operation;
   }
-  async function readPage(name) {
+  async function readPage(name, scheduling) {
     if (!validRepository(name)) throw new GitHubError("项目名称无效。", 400);
-    const html = await webPage(`/${name}`);
+    const html = await webPage(`/${name}`, scheduling);
     try {
       return { ...parsePublicRepository(html, name), html };
     } catch (error) {
@@ -315,16 +331,24 @@ export function createGitHubClient({
   async function search(params) {
     const size = Number(params.get("per_page")),
       page = Number(params.get("page"));
-    try {
-      // Three existing 12-item UI pages share one REST search request.
-      const batch = new URLSearchParams(params);
-      if (size === 12) {
-        batch.set("per_page", "36");
-        batch.set("page", String(Math.floor((page - 1) / 3) + 1));
-      }
-      batch.sort();
+    // Three existing 12-item UI pages share one REST search request.
+    const batch = new URLSearchParams(params);
+    if (size === 12) {
+      batch.set("per_page", "36");
+      batch.set("page", String(Math.floor((page - 1) / 3) + 1));
+    }
+    batch.sort();
+    const batchKey = `batch:/search/repositories?${batch}`;
+    const savedBatch = cache.get(batchKey);
+    const useWebRace =
+      fastSearchFallback &&
+      !pending.has(batchKey) &&
+      !(savedBatch && now() - savedBatch.savedAt < 10 * MINUTE) &&
+      (lanes.search.count > 0 || lanes.search.next - now() > 1200) &&
+      lanes.web.until <= now();
+    const fromApi = async () => {
       const result = await memo(
-        `batch:/search/repositories?${batch}`,
+        batchKey,
         10 * MINUTE,
         async () => ({
           ...(await rest(`/search/repositories?${batch}`)),
@@ -343,6 +367,20 @@ export function createGitHubClient({
           ),
         },
       };
+    };
+    // Both sources retain their pacing/cooldowns. A slow webpage must never
+    // delay the already queued REST request; only verified responses can win.
+    if (useWebRace) {
+      try {
+        return await Promise.any([fromApi(), searchWeb(params)]);
+      } catch (errors) {
+        throw (
+          errors.errors.find((error) => !recoverable(error)) || errors.errors[0]
+        );
+      }
+    }
+    try {
+      return await fromApi();
     } catch (error) {
       if (!recoverable(error)) throw error;
       return searchWeb(params);
@@ -377,6 +415,9 @@ export function createGitHubClient({
           "github-raw",
         );
       } catch {
+        // A connection failure affects this host, not a particular README name.
+        // Avoid repeating the same timeout for every file/candidate in the burst.
+        lanes.raw.until = Math.max(lanes.raw.until, now() + 15_000);
         return null;
       }
     }

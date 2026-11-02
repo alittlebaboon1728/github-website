@@ -12,6 +12,7 @@ type State = {
   busy: boolean;
 };
 const cache = new Map<string, State>();
+const noCards: Record<string, GeneratedCard> = {};
 const empty = (key: string): State => ({
   key,
   cards: {},
@@ -21,12 +22,13 @@ const empty = (key: string): State => ({
 });
 
 /** Summarize the displayed ranking, without replacing its order or live statistics. */
-export function useRankingSummaries(names: string[], filters: string) {
+export function useRankingSummaries(names: string[], filters: string, initialCards = noCards, serverManaged = false) {
   const key = JSON.stringify([filters, names]);
   const [state, setState] = useState<State>(() => cache.get(key) || empty(key));
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const [scope, repositories] = JSON.parse(key) as [string, string[]];
+    if (serverManaged || repositories.every((name) => initialCards[name])) return;
     if (!repositories.length) return;
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
@@ -61,7 +63,7 @@ export function useRankingSummaries(names: string[], filters: string) {
         const job = await requestCardJob(`jobs/${id}`, controller.signal);
         accept(job);
         if (!controller.signal.aborted && job.state === "running")
-          timer = setTimeout(() => void poll(id), 1200);
+          timer = setTimeout(() => void poll(id), 600);
       } catch (error) {
         failed(error);
       }
@@ -80,7 +82,7 @@ export function useRankingSummaries(names: string[], filters: string) {
         });
         accept(job);
         if (!controller.signal.aborted && job.state === "running")
-          timer = setTimeout(() => void poll(job.id), 500);
+          timer = setTimeout(() => void poll(job.id), 100);
       } catch (error) {
         failed(error);
       }
@@ -90,20 +92,21 @@ export function useRankingSummaries(names: string[], filters: string) {
       controller.abort();
       clearTimeout(timer);
     };
-  }, [key, attempt]);
+  }, [key, attempt, initialCards, serverManaged]);
   const current = state.key === key ? state : cache.get(key) || empty(key);
   // A larger visible batch can immediately reuse summaries from an earlier batch.
   const cards = Object.assign(
     {},
     ...[...cache.values()].map((s) => s.cards),
     current.cards,
+    initialCards,
   ) as Record<string, GeneratedCard>;
   return {
     cards,
-    busy: names.length > 0 && current.busy,
+    busy: !serverManaged && names.some((name) => !cards[name]) && current.busy,
     ready: names.filter((name) => cards[name]).length,
-    error: current.error,
-    errors: current.errors,
+    error: serverManaged ? "" : current.error,
+    errors: serverManaged ? {} : current.errors,
     retry: () => setAttempt((value) => value + 1),
   };
 }

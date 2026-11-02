@@ -102,7 +102,12 @@ test("DeepSeek card jobs keep source, correction and caches separate across proj
       (repo) => repo.full_name === input.repository.fullName,
     );
     const other = projects.find((repo) => repo !== current);
-    assert.ok(input.source.includes(current.description));
+    assert.equal(input.source, undefined); // source text travels only once
+    assert.ok(
+      input.sourceSegments.some((segment) =>
+        segment.text.includes(current.description),
+      ),
+    );
     assert.equal(JSON.stringify(input).includes(other.description), false);
     if (current.name === "alpha" && !input.correction)
       return response({ invalid: "ALPHA_PRIVATE_REPAIR" });
@@ -273,7 +278,7 @@ const choice = (fullName) => ({
   limitations: [{ text: "同步方式待核对。", unknown: true }],
 });
 
-test("GitHub collects each README once before independent DeepSeek checks; no source batch is sent to the model", async () => {
+test("GitHub reads each README once while independent DeepSeek checks run; no source batch is sent to the model", async () => {
   const fixture = recommendationFixture();
   let active = 0,
     peak = 0;
@@ -281,7 +286,6 @@ test("GitHub collects each README once before independent DeepSeek checks; no so
   const model = createModelClient(dsConfig, async (_url, options) => {
     const input = inputOf(JSON.parse(options.body));
     if (input.turns) return response(plan);
-    assert.equal(fixture.reads.length, fixture.repos.length);
     assert.equal(input.candidates.length, 1);
     const current = input.candidates[0];
     verified.push(current.fullName);
@@ -309,7 +313,7 @@ test("GitHub collects each README once before independent DeepSeek checks; no so
     verified,
     fixture.repos.map((repo) => repo.full_name),
   );
-  assert.equal(peak, 2);
+  assert.equal(peak, 4);
   assert.deepEqual(
     result.selections.map((item) => item.repo.full_name),
     verified.slice(0, 8),

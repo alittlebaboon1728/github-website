@@ -27,7 +27,7 @@ export function buildGitHubPath(url) {
     if (!["stars", "updated", "best-match"].includes(sort))
       throw new GitHubError("不支持的排序方式。", 400);
     const parameters = new URLSearchParams({
-      q: `${q} is:public`,
+      q: /(?:^|\s)is:public(?:\s|$)/.test(q) ? q : `${q} is:public`,
       page: String(page),
       per_page: "12",
       order: "desc",
@@ -170,10 +170,17 @@ export async function handleGitHubRequest(req, res, options = {}) {
     return true;
   }
   try {
-    const path = buildGitHubPath(new URL(req.url, "http://localhost"));
-    const result = await (options.github
+    const url = new URL(req.url, "http://localhost");
+    const path = buildGitHubPath(url);
+    let result = await (options.library?.enabled && url.pathname === "/api/github/search"
+      ? options.library.search(Object.fromEntries(url.searchParams))
+      : options.github
       ? options.github(path)
       : getGitHubData(path, options));
+    if (options.media && !(options.library?.enabled && url.pathname === "/api/github/search")) {
+      if (Array.isArray(result.data.items)) result = { ...result, data: { ...result.data, items: await options.media.decorate(result.data.items) } };
+      else if (result.data.full_name) result = { ...result, data: (await options.media.decorate([result.data]))[0] };
+    }
     res.writeHead(200);
     res.end(JSON.stringify(result));
   } catch (error) {

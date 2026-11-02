@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { trialDocument, trialRequest } from "../trials";
 import type { Trial, TrialStatus } from "../trials";
+import { useTrialStatus } from "../useTrialCatalog";
 import { dateLabel } from "../observatoryApi";
 import GlassButton from "./GlassButton";
 import { projectTrialSections } from "../projectTrialSections";
@@ -274,49 +275,18 @@ export default function TrialPage({
   fullName: string;
   dark: boolean;
 }) {
-  const [status, setStatus] = useState<TrialStatus | null>(null),
-    [error, setError] = useState("");
-  const [revision, setRevision] = useState(0),
-    [submitting, setSubmitting] = useState(false),
+  const { status, error: readError, retry } = useTrialStatus(fullName);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false),
     [confirm, setConfirm] = useState(false);
-  useEffect(() => {
-    const controller = new AbortController();
-    let timer: ReturnType<typeof setTimeout>;
-    const read = async () => {
-      try {
-        const next = await trialRequest<TrialStatus>(
-          fullName,
-          controller.signal,
-        );
-        if (controller.signal.aborted) return;
-        setStatus(next);
-        setError("");
-        if (next.job?.state === "running")
-          timer = setTimeout(() => void read(), 1800);
-      } catch (problem) {
-        if (!controller.signal.aborted)
-          setError(
-            problem instanceof Error ? problem.message : "读取失败，请重试。",
-          );
-      }
-    };
-    void read();
-    return () => {
-      controller.abort();
-      clearTimeout(timer);
-    };
-  }, [fullName, revision]);
   async function generate() {
     setSubmitting(true);
     setError("");
     setConfirm(false);
     try {
-      setStatus(
-        await trialRequest<TrialStatus>(fullName, undefined, {
-          regenerate: Boolean(status?.trial),
-        }),
-      );
-      setRevision((n) => n + 1);
+      await trialRequest<TrialStatus>(fullName, undefined, {
+        regenerate: Boolean(status?.trial),
+      });
     } catch (problem) {
       setError(
         problem instanceof Error ? problem.message : "生成请求失败，请重试。",
@@ -343,10 +313,17 @@ export default function TrialPage({
           <ArrowUpRight size={14} />
         </a>
       </div>
-      {error && (
+      {(error || readError) && (
         <div className="trial-error" role="alert">
-          {error}
-          <button onClick={() => setRevision((n) => n + 1)}>重新读取</button>
+          {error || readError}
+          <button
+            onClick={() => {
+              setError("");
+              retry();
+            }}
+          >
+            重新读取
+          </button>
         </div>
       )}
       {status?.job?.state === "error" && (
@@ -373,7 +350,7 @@ export default function TrialPage({
           </a>
         </div>
       )}
-      {!status && !error && (
+      {!status && !error && !readError && (
         <div className="trial-empty">
           <Loader2 className="spin" />
           <p>正在读取项目试用…</p>

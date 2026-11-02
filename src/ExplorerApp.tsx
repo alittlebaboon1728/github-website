@@ -1,11 +1,4 @@
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -28,19 +21,11 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import {
-  ApiError,
-  fetchRepository,
-  normalizeRepo,
-  repositoryFromInput,
-  request,
-} from "./api";
-import type { SearchData } from "./api";
+import { fetchRepository, repositoryFromInput } from "./api";
 import {
   categories,
   hasProjectTrial,
   searchAliases,
-  snapshotDate,
   snapshotRepos,
 } from "./catalog";
 import type { Repository } from "./catalog";
@@ -62,9 +47,15 @@ import { useGlassLight } from "./useGlassLight";
 import { useLiquidRefraction } from "./useLiquidRefraction";
 import type { SearchMode } from "./observatoryApi";
 import FilterDisclosure from "./components/FilterDisclosure";
-const ProjectDetail = lazy(() => import("./ProjectDetail"));
-const TrialPage = lazy(() => import("./components/TrialPage"));
-const TrialLibrary = lazy(() => import("./components/TrialLibrary"));
+import { useDiscoverySearch } from "./useDiscoverySearch";
+import {
+  useNavigationPreload,
+  preloadCategory,
+  preloadSection,
+} from "./navigationPreload";
+import TrialLibrary from "./components/TrialLibrary";
+import ProjectDetail from "./ProjectDetail";
+import TrialPage from "./components/TrialPage";
 
 type Route = {
   page:
@@ -79,15 +70,6 @@ type DiscoveryState = {
   browseQuery: string;
   language: string;
   sort: string;
-  page: number;
-  items: Repository[];
-  total: number;
-  source: "live" | "cache" | "snapshot" | null;
-  fetchedAt: string;
-  sourceNote: string;
-  incomplete: boolean;
-  exhausted: boolean;
-  error: ApiError | null;
   scroll: number;
 };
 function parseRoute(): Route {
@@ -156,18 +138,6 @@ export default function ExplorerApp() {
   const browserRef = useRef<HTMLElement>(null);
   const [language, setLanguage] = useState("");
   const [sort, setSort] = useState("stars");
-  const [page, setPage] = useState(1);
-  const [items, setItems] = useState<Repository[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [source, setSource] = useState<"live" | "cache" | "snapshot" | null>(
-    null,
-  );
-  const [fetchedAt, setFetchedAt] = useState("");
-  const [sourceNote, setSourceNote] = useState("");
-  const [incomplete, setIncomplete] = useState(false);
-  const [exhausted, setExhausted] = useState(false);
   const [nonce, setNonce] = useState(0);
   const [saved, setSaved] = useState<Repository[]>(() => {
     const value = stored<Repository[]>("observatory-saved-v1", []);
@@ -183,8 +153,38 @@ export default function ExplorerApp() {
     ? searchAliases[browseQuery.trim()] || browseQuery.trim()
     : category.query;
   const query = language ? `${apiQuery} language:${language}` : apiQuery;
-  const { result: serviceStatus } = useContent<{ cardGeneration: boolean }>(
-    "/status",
+  const {
+    items,
+    page,
+    total,
+    source,
+    fetchedAt,
+    sourceNote,
+    incomplete,
+    exhausted,
+    loading,
+    error,
+    loadMore,
+    retry: retrySearch,
+    serverManaged,
+    pendingCount,
+    preparationError,
+    filterPreview,
+    refreshPending,
+  } = useDiscoverySearch(
+    query,
+    sort,
+    route.page === "discover",
+    nonce,
+    !browseQuery && browseCategory === "all" && !language,
+  );
+  const { result: serviceStatus } = useContent<{
+    cardGeneration: boolean;
+    discoveryBackground?: boolean;
+  }>("/status");
+  useNavigationPreload(
+    route.page === "discover" && !!source,
+    Boolean(serviceStatus?.data.discoveryBackground),
   );
   const aiCards = useGeneratedCards({
     query,
@@ -192,6 +192,8 @@ export default function ExplorerApp() {
     revision: nonce,
     enabled: Boolean(
       serviceStatus?.data.cardGeneration &&
+      !serviceStatus.data.discoveryBackground &&
+      !serverManaged &&
       route.page === "discover" &&
       source &&
       source !== "snapshot",
@@ -206,24 +208,14 @@ export default function ExplorerApp() {
       browseQuery,
       language,
       sort,
-      page,
-      items,
-      total,
-      source,
-      fetchedAt,
-      sourceNote,
-      incomplete,
-      exhausted,
-      error,
       scroll: window.scrollY,
     },
   };
-  const restoredQuery = useRef<string | null>(null);
 
   useEffect(() => {
     function change() {
       const previous = activeRoute.current;
-      if (previous.route.page === "discover" && previous.state.source) {
+      if (previous.route.page === "discover") {
         navigationCache.current.set(previous.route.search, {
           ...previous.state,
           scroll: window.scrollY,
@@ -243,26 +235,14 @@ export default function ExplorerApp() {
       if (savedState) {
         setBrowseCategory(savedState.browseCategory);
         setBrowseQuery(savedState.browseQuery);
-        setPage(savedState.page);
         setLanguage(savedState.language);
         setSort(savedState.sort);
-        setItems(savedState.items);
-        setTotal(savedState.total);
-        setSource(savedState.source);
-        setFetchedAt(savedState.fetchedAt);
-        setSourceNote(savedState.sourceNote);
-        setIncomplete(savedState.incomplete);
-        setExhausted(savedState.exhausted);
-        setError(savedState.error);
-        setLoading(false);
-        restoredQuery.current = next.search;
         requestAnimationFrame(() =>
           window.scrollTo({ top: savedState.scroll, behavior: "instant" }),
         );
       } else {
         setBrowseCategory(next.category);
         setBrowseQuery(next.query);
-        setPage(1);
         setLanguage("");
         setSort("stars");
       }
@@ -303,77 +283,8 @@ export default function ExplorerApp() {
   }, []);
 
   useEffect(() => {
-    if (route.page !== "discover") return;
-    if (restoredQuery.current === route.search) {
-      restoredQuery.current = null;
-      return;
-    }
-    const controller = new AbortController();
-    setLoading(true);
-    setError(null);
-    if (page === 1) {
-      setSource(null);
-      setSourceNote("");
-      setExhausted(false);
-    }
-    const params = new URLSearchParams({ q: query, sort, page: String(page) });
-    request<SearchData>(`/search?${params}`, controller.signal)
-      .then((result) => {
-        if (controller.signal.aborted) return;
-        const repos = result.data.items.map(normalizeRepo);
-        for (const repo of repos) repoMemory.current.set(repo.fullName, repo);
-        setItems((previous) =>
-          page === 1
-            ? repos
-            : [
-                ...new Map(
-                  [...previous, ...repos].map((repo) => [repo.fullName, repo]),
-                ).values(),
-              ],
-        );
-        setTotal(result.data.total_count);
-        setExhausted(repos.length === 0);
-        setIncomplete(result.data.incomplete_results);
-        setSource(result.source);
-        setFetchedAt(result.fetchedAt);
-        setSourceNote(result.warning || "");
-      })
-      .catch((problem) => {
-        if (controller.signal.aborted) return;
-        setError(
-          problem instanceof ApiError
-            ? problem
-            : new ApiError("数据读取失败，请重试。"),
-        );
-        if (
-          page === 1 &&
-          !browseQuery &&
-          browseCategory === "all" &&
-          !language
-        ) {
-          setItems(snapshotRepos);
-          setSource("snapshot");
-          setFetchedAt(snapshotDate);
-          setTotal(snapshotRepos.length);
-        } else if (page === 1) setItems([]);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [
-    query,
-    sort,
-    page,
-    nonce,
-    route.page,
-    route.query,
-    route.category,
-    route.search,
-    language,
-    browseCategory,
-    browseQuery,
-  ]);
+    for (const repo of items) repoMemory.current.set(repo.fullName, repo);
+  }, [items]);
 
   function submitSearch(value: string, mode = searchMode) {
     const text = value.trim();
@@ -397,7 +308,6 @@ export default function ExplorerApp() {
     if (window.location.hash === `#${path}`) {
       setBrowseQuery(text);
       setBrowseCategory("all");
-      setPage(1);
       setNonce((n) => n + 1);
       return;
     }
@@ -465,7 +375,6 @@ export default function ExplorerApp() {
     setBrowseCategory(id);
     setBrowseQuery("");
     setDraft("");
-    setPage(1);
     if (reveal)
       requestAnimationFrame(() =>
         browserRef.current?.scrollIntoView({
@@ -521,6 +430,7 @@ export default function ExplorerApp() {
             }
             open={sidebar}
             savedCount={saved.length}
+            onIntent={preloadSection}
           />
           <div className="site-tools">
             <button
@@ -711,6 +621,7 @@ export default function ExplorerApp() {
                         <CategoryFilters
                           active={browseQuery ? null : browseCategory}
                           onChange={selectCategory}
+                          onIntent={(id) => preloadCategory(id, language, sort)}
                         />
                         <div className="select-filters">
                           <label>
@@ -720,7 +631,6 @@ export default function ExplorerApp() {
                               value={language}
                               onChange={(event) => {
                                 setLanguage(event.target.value);
-                                setPage(1);
                               }}
                             >
                               <option value="">全部语言</option>
@@ -745,7 +655,6 @@ export default function ExplorerApp() {
                               value={sort}
                               onChange={(event) => {
                                 setSort(event.target.value);
-                                setPage(1);
                               }}
                             >
                               <option value="stars">最多星标</option>
@@ -776,7 +685,8 @@ export default function ExplorerApp() {
                         </summary>
                         <div className="browse-info-panel">
                           <p>
-                            已载入 {displayItems.length} 项 · 匹配{" "}
+                            已载入 {displayItems.length} 项 ·{" "}
+                            {filterPreview ? "已收录范围匹配" : "匹配"}{" "}
                             {(aiCards.enabled
                               ? aiCards.total || total
                               : total
@@ -800,7 +710,7 @@ export default function ExplorerApp() {
                           {sourceNote && <p>{sourceNote}</p>}
                           <p>
                             中文介绍依据项目资料整理，可切换作者原文；图片来自
-                            README，无图时省略。先准备前三页，加载更多时再生成下一页，已有内容复用缓存。
+                            README，无图时省略。常用分类的中文介绍已提前准备，服务端持续更新并保存在本机。
                           </p>
                         </div>
                       </details>
@@ -810,7 +720,6 @@ export default function ExplorerApp() {
                         title="刷新项目"
                         disabled={loading}
                         onClick={() => {
-                          setPage(1);
                           setNonce((n) => n + 1);
                         }}
                       >
@@ -822,6 +731,51 @@ export default function ExplorerApp() {
                     </div>
                   </div>
                 )}
+                {serverManaged && pendingCount > 0 && (
+                  <div className="card-generation-progress" role="status">
+                    {preparationError ? (
+                      <Info size={14} />
+                    ) : (
+                      <Loader2 size={14} className="spin" />
+                    )}
+                    <span>
+                      {preparationError ||
+                        `正在准备这个范围的中文介绍，还剩 ${pendingCount} 项…`}
+                    </span>
+                    {preparationError && (
+                      <button onClick={retrySearch}>重新读取</button>
+                    )}
+                  </div>
+                )}
+                {filterPreview && route.page === "discover" && !error && (
+                  <div className="card-generation-progress" role="status">
+                    {refreshPending ? (
+                      <Loader2 size={14} className="spin" />
+                    ) : (
+                      <Info size={14} />
+                    )}
+                    <span>
+                      {preparationError ||
+                        (displayItems.length
+                          ? "已显示本机收录中符合条件的项目，正在补全结果。"
+                          : "本机收录中暂无匹配项目，正在查找更多结果。")}
+                    </span>
+                    {!refreshPending && (
+                      <button onClick={retrySearch}>重新读取</button>
+                    )}
+                  </div>
+                )}
+                {refreshPending &&
+                  !filterPreview &&
+                  !pendingCount &&
+                  route.page === "discover" && (
+                    <div className="card-generation-progress" role="status">
+                      <Loader2 size={14} className="spin" />
+                      <span>
+                        正在更新这个范围的项目，已显示的内容可以继续浏览。
+                      </span>
+                    </div>
+                  )}
                 {aiCards.enabled &&
                   (aiCards.busy || aiCards.error || aiCards.needsRetry) && (
                     <div className="card-generation-progress" role="status">
@@ -855,7 +809,7 @@ export default function ExplorerApp() {
                         <span>显示已保存资料。搜索将在连接恢复后可用。</span>
                       )}
                     </div>
-                    <button onClick={() => setNonce((n) => n + 1)}>
+                    <button onClick={retrySearch}>
                       重新连接
                       <RefreshCw size={13} />
                     </button>
@@ -876,10 +830,7 @@ export default function ExplorerApp() {
                     ))}
                   </div>
                 ) : displayItems.length ? (
-                  <RepositoryGrid
-                    className={loading && page === 1 ? "browser-updating" : ""}
-                    inert={loading && page === 1}
-                  >
+                  <RepositoryGrid>
                     {displayItems.map((repo) => (
                       <RepositoryCard
                         key={repo.fullName}
@@ -901,7 +852,9 @@ export default function ExplorerApp() {
                     ))}
                   </RepositoryGrid>
                 ) : (
-                  !error && (
+                  !error &&
+                  !pendingCount &&
+                  !filterPreview && (
                     <div className="discovery-empty">
                       <Bookmark size={30} />
                       <h3>
@@ -941,8 +894,12 @@ export default function ExplorerApp() {
                   items.length < Math.min(total, 1000) && (
                     <button
                       className="load-more"
-                      disabled={loading}
-                      onClick={() => setPage((p) => p + 1)}
+                      disabled={
+                        loading ||
+                        pendingCount > 0 ||
+                        (refreshPending && !filterPreview)
+                      }
+                      onClick={loadMore}
                     >
                       {loading ? (
                         <Loader2 size={15} className="spin" />

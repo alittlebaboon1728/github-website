@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ChevronDown,
   Loader2,
@@ -41,6 +41,11 @@ export default function TrendsPage({
   );
   const [visible, setVisible] = useState(compact ? 4 : 10);
   const data = result?.data;
+  useEffect(() => {
+    if (!data?.prepared || !data.pending_count || loading || error) return;
+    const timer = setTimeout(retry, 2500);
+    return () => clearTimeout(timer);
+  }, [data, loading, error, retry]);
   const rawRows = growthView
     ? data?.growth.ready
       ? data.growth.items
@@ -54,6 +59,8 @@ export default function TrendsPage({
   const summaries = useRankingSummaries(
     shown.map((item) => item.repo.full_name),
     query,
+    data?.cards,
+    data?.prepared,
   );
   const rows = rawRows.map((item) => ({
     ...item,
@@ -208,6 +215,12 @@ export default function TrendsPage({
               )}
             </div>
           )}
+          {data.prepared && Boolean(data.pending_count) && (
+            <div className="ranking-generation" role="status">
+              <Loader2 size={13} className="spin" />
+              服务端正在补齐这个范围的中文介绍…
+            </div>
+          )}
           {growthView && !data.growth.ready ? (
             <div className="history-empty ranking-empty">
               <div className="ranking-empty-icon">
@@ -248,7 +261,7 @@ export default function TrendsPage({
               ))}
             </div>
           )}
-          {!growthView && !rows.length && (
+          {!growthView && !rows.length && !data.pending_count && (
             <div className="history-empty ranking-empty">
               <h2>暂时没有匹配的项目</h2>
               <p>试试其他语言或用途。</p>

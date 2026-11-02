@@ -1,4 +1,6 @@
 import type { Repository } from "./catalog";
+import type { GeneratedCard } from "./generatedCards";
+import type { ProjectMedia } from "./projectMedia";
 export type ApiEnvelope<T> = {
   data: T;
   source: "live" | "cache";
@@ -9,6 +11,7 @@ export type ApiEnvelope<T> = {
   warning?: string;
 };
 export type RawRepository = {
+  media?: ProjectMedia;
   id: number;
   owner: { login: string; avatar_url: string };
   name: string;
@@ -28,6 +31,12 @@ export type RawRepository = {
   archived: boolean;
 };
 export type SearchData = {
+  cards?: Record<string, GeneratedCard>;
+  prepared?: boolean;
+  pending_count?: number;
+  preparation_error?: string;
+  filter_preview?: boolean;
+  refresh_pending?: boolean;
   total_count: number;
   incomplete_results: boolean;
   items: RawRepository[];
@@ -117,7 +126,8 @@ export function normalizeRepo(raw: RawRepository): Repository {
     }[icon],
     tags,
     url: raw.html_url,
-    avatar: raw.owner.avatar_url,
+    avatar: sizedAvatar(raw.owner.avatar_url),
+    media: raw.media,
     homepage: raw.homepage || "",
     license: raw.license?.spdx_id || "未声明",
     defaultBranch: raw.default_branch,
@@ -125,6 +135,18 @@ export function normalizeRepo(raw: RawRepository): Repository {
     openIssues: raw.open_issues_count,
     archived: raw.archived,
   };
+}
+function sizedAvatar(value: string) {
+  try {
+    const url = new URL(value);
+    if (url.hostname === "avatars.githubusercontent.com") {
+      url.searchParams.set("s", "80");
+      return url.href;
+    }
+  } catch {
+    /* Local cached image URLs are already sized. */
+  }
+  return value;
 }
 export async function fetchRepository(fullName: string, signal?: AbortSignal) {
   const result = await request<RawRepository>(

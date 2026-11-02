@@ -22,6 +22,13 @@ test("search forces public scope, validates query, pagination and sort", () => {
   assert.equal(result.searchParams.get("sort"), "updated");
   assert.equal(
     new URL(
+      buildGitHubPath(url("/api/github/search?q=notes%20is:public")),
+      "https://api.github.com",
+    ).searchParams.get("q"),
+    "notes is:public",
+  );
+  assert.equal(
+    new URL(
       buildGitHubPath(url("/api/github/search?q=test&sort=best-match")),
       "https://api.github.com",
     ).searchParams.has("sort"),

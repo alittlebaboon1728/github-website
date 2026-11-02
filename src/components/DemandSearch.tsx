@@ -109,8 +109,18 @@ export default function DemandSearch({
     setLoading(true);
     setError(null);
     setCancelled(false);
+    setResult(null);
     setStatus(project ? "正在阅读项目资料…" : "正在理解你的需求…");
-    askProjects(conversation, controller.signal, setStatus)
+    askProjects(
+      conversation,
+      controller.signal,
+      (message) => {
+        if (!controller.signal.aborted) setStatus(message);
+      },
+      (value) => {
+        if (!controller.signal.aborted) setResult(value);
+      },
+    )
       .then((value) => {
         if (controller.signal.aborted) return;
         if (answers.size >= 40) answers.delete(answers.keys().next().value!);
@@ -315,7 +325,7 @@ export default function DemandSearch({
                               />
                               <span key={status}>{status}</span>
                             </div>
-                            {project ? (
+                            {data?.selections.length ? null : project ? (
                               <div
                                 className="chat-project-loading"
                                 aria-hidden="true"
@@ -383,14 +393,19 @@ export default function DemandSearch({
                             </div>
                           </div>
                         )}
-                        {!loading && data && !error && !cancelled && (
+                        {data && (!error || data.partial) && (
                           <>
                             <RecommendationReply
                               result={result!}
+                              pending={loading}
                               {...actions}
-                              onRetry={() => setNonce((n) => n + 1)}
+                              onRetry={
+                                !loading && !cancelled
+                                  ? () => setNonce((n) => n + 1)
+                                  : undefined
+                              }
                             />
-                            {!project && (
+                            {!project && !loading && !error && !cancelled && (
                               <details
                                 className="chat-condition-editor"
                                 open={

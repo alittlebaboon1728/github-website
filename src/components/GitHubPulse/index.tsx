@@ -13,6 +13,8 @@ import {
   Tag,
 } from "lucide-react";
 import { contentRequest } from "../../observatoryApi";
+import type { ApiEnvelope } from "../../api";
+import { loadResource, peekResource } from "../../resourceCache";
 import type { ActivityEvent } from "../../observatoryApi";
 import PulseChart from "./PulseChart";
 import "./pulse.css";
@@ -56,7 +58,11 @@ export default function GitHubPulse({
   tickMs = 1800,
 }: GitHubPulseProps) {
   const root = useRef<HTMLElement>(null);
-  const [data, setData] = useState<PulseData | null>(null);
+  const [data, setData] = useState<PulseData | null>(
+    () =>
+      peekResource<ApiEnvelope<PulseData>>(`content:${endpoint}`)?.value
+        ?.data || null,
+  );
   const [incoming, setIncoming] = useState<PulseData | null>(null);
   const [cursor, setCursor] = useState(0);
   const [paused, setPaused] = useState(
@@ -66,7 +72,7 @@ export default function GitHubPulse({
   const [focused, setFocused] = useState(false);
   const [visible, setVisible] = useState(true);
   const [foreground, setForeground] = useState(!document.hidden);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!data);
   const [error, setError] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const stopped = paused || held || focused || !visible || !foreground;
@@ -101,9 +107,10 @@ export default function GitHubPulse({
       busy = true;
       setLoading(true);
       try {
-        const response = await contentRequest<PulseData>(
-          endpoint,
-          controller.signal,
+        const response = await loadResource(
+          `content:${endpoint}`,
+          (signal) => contentRequest<PulseData>(endpoint, signal),
+          { ttl: 60_000, force: manual && refresh > 0 },
         );
         if (!controller.signal.aborted) {
           setIncoming(response.data);

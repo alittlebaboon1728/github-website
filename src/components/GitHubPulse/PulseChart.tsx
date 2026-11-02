@@ -23,7 +23,7 @@ export default function PulseChart({
 }) {
   const chart = useRef<HTMLDivElement>(null);
   const tooltipId = useId();
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() => bars.length > 0);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [hasFocus, setHasFocus] = useState(false);
   const hasBars = bars.length > 0;

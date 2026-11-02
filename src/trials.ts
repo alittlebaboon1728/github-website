@@ -1,3 +1,4 @@
+import { invalidateResources, seedResource } from "./resourceCache";
 import { ApiError } from "./api";
 import sandboxMaterial from "./trial-sandbox.css?raw";
 
@@ -65,6 +66,8 @@ export type TrialCatalog = Pick<
 > & { trials: TrialSummary[]; jobs: TrialJob[] };
 export const trialPath = (repo: string) =>
   `#/trial/${repo.split("/").map(encodeURIComponent).join("/")}`;
+export const trialResourceKey = (repo?: string) =>
+  `trials:${repo?.toLowerCase() || "catalog"}`;
 export async function trialRequest<T>(
   repo?: string,
   signal?: AbortSignal,
@@ -86,6 +89,10 @@ export async function trialRequest<T>(
   const body = await response.json();
   if (!response.ok)
     throw new ApiError(body.error || "项目试用暂时无法读取。", response.status);
+  if (generate) {
+    invalidateResources("trials:");
+    seedResource(trialResourceKey(repo), body.data);
+  }
   return body.data as T;
 }
 

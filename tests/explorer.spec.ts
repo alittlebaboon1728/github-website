@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import sharp from "sharp";
 import type { Repository } from "../src/catalog";
 const snapshot = JSON.parse(
   readFileSync(
@@ -1112,6 +1113,34 @@ test("cards show actual README media, omit absent or broken images, and keep the
   expect(
     requests.filter((name) => name === "media-fixture/picture"),
   ).toHaveLength(1);
+});
+
+test("prepared local thumbnails render without metadata waterfalls and retain dimensions in quick read", async ({ page }) => {
+  const url = "/api/observatory/images/" + "a".repeat(64) + ".webp";
+  const repositories = ["cached-picture", "text-only"].map((name, index) => ({
+    ...raw(first), id: 999970 + index, name, full_name: `image-speed/${name}`,
+    owner: { login: "image-speed", avatar_url: "" },
+    media: { image: index ? null : { url, srcSet: `${url} 960w`, width: 960, height: 160, alt: "已缓存的界面截图", sourceUrl: "https://github.com/image-speed/cached-picture#readme" } },
+  }));
+  await page.route("**/api/github/search?*", (route) => route.fulfill({ json: envelope({ items: repositories, total_count: 2, incomplete_results: false }) }));
+  const thumbnail = await sharp({ create: { width: 480, height: 80, channels: 3, background: "#567894" } }).webp().toBuffer();
+  await page.route("**/api/observatory/images/*.webp", (route) => route.fulfill({ body: thumbnail, contentType: "image/webp" }));
+  const metadata: string[] = [];
+  page.on("request", (request) => { if (request.url().includes("/project-media?")) metadata.push(request.url()); });
+  await page.goto("/");
+  const cards = page.locator(".project-card");
+  await expect(cards).toHaveCount(2);
+  await cards.first().scrollIntoViewIfNeeded();
+  const cover = cards.first().locator(".trend-card-cover img");
+  await expect(cover).toHaveAttribute("src", url);
+  await expect(cover).toHaveAttribute("width", "960");
+  await expect(cover).toHaveAttribute("height", "160");
+  await expect(cover).toHaveAttribute("decoding", "async");
+  await expect(cover).toHaveJSProperty("complete", true);
+  await expect(cards.nth(1).locator(".trend-card-cover")).toHaveCount(0);
+  await cards.first().getByRole("button", { name: "查看 cached-picture 的项目配图" }).click();
+  await expect(page.getByRole("dialog").locator(".trend-card-cover img")).toHaveAttribute("src", url);
+  expect(metadata).toEqual([]);
 });
 
 test("frosted search keeps native controls, keyboard focus and reduced motion", async ({

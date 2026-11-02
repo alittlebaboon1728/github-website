@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import {
   createCardService,
   validateCard,
@@ -54,6 +55,35 @@ const repo = (index) => ({
   private: false,
   pushed_at: "2026-10-31",
   topics: ["notes"],
+});
+test("background preparation shares foreground generation and stale Chinese remains readable from disk", async (t) => {
+  const store = await fixture(t);
+  let calls = 0, finish;
+  const model = {
+    configured: true, name: "fixture",
+    async json(_system, _input, options) {
+      calls++;
+      assert.equal(options.priority, -10);
+      await new Promise((resolve) => { finish = resolve; });
+      return value();
+    },
+  };
+  const github = async () => ({ data: { content: description }, fetchedAt: new Date().toISOString() });
+  const service = createCardService({ store, model, github });
+  const preparation = service.prepare([repo(1)]);
+  for (let i = 0; !finish && i < 100; i++) await new Promise((resolve) => setTimeout(resolve, 2));
+  const foreground = service.startRanking([repo(1)]);
+  finish();
+  const prepared = await preparation;
+  await finished(service, foreground.id);
+  assert.equal(calls, 1);
+  assert.equal(Object.keys(prepared.cards).length, 1);
+  const key = `card-${createHash("sha256").update(repo(1).full_name.toLowerCase()).digest("hex")}`;
+  await store.update(key, (saved) => ({ ...saved, card: { ...saved.card, generatedAt: "2020-01-01" } }));
+  const recreated = createCardService({ store, model: { configured: true, json() { throw new Error("read should not call model"); } }, github });
+  const cached = await recreated.cached([repo(1), { ...repo(2), private: true }]);
+  assert.equal(cached[repo(1).full_name].generatedAt, "2020-01-01");
+  assert.equal(Object.keys(cached).length, 1);
 });
 async function finished(service, id) {
   for (let i = 0; i < 500; i++) {
@@ -390,4 +420,63 @@ test("ranking endpoint verifies names against the cached ranking and ignores unt
   assert.deepEqual(Object.keys(result.pages[0].cards), ["test/notes-2"]);
   assert.equal(searches, 1);
   assert.equal(calls, 1);
+});
+
+test("cached summaries and all search pages are available while unrelated model work is blocked", async (t) => {
+  const store = await fixture(t);
+  const model = {
+    configured: true,
+    name: "fixture",
+    json: async () => value(),
+  };
+  const github = async (path) => {
+    if (path.endsWith("/readme")) return { data: { content: description } };
+    const page = Number(
+      new URL(path, "http://fixture").searchParams.get("page"),
+    );
+    return {
+      data: {
+        items: Array.from({ length: 12 }, (_, i) => repo(page * 12 + i)),
+        total_count: 100,
+      },
+    };
+  };
+  const warm = createCardService({ store, github, model });
+  await finished(warm, warm.startRanking([repo(1)]).id);
+  let release;
+  const blocked = new Promise((resolve) => {
+    release = resolve;
+  });
+  let calls = 0;
+  const service = createCardService({
+    store,
+    github,
+    concurrency: 1,
+    model: {
+      ...model,
+      json: async () => {
+        calls++;
+        await blocked;
+        return value();
+      },
+    },
+  });
+  t.after(release);
+  const discovery = service.start({ q: "notes", count: 3 });
+  for (
+    let i = 0;
+    i < 100 && !service.get(discovery.id).pages.every((p) => p.items.length);
+    i++
+  )
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  assert.equal(
+    service.get(discovery.id).pages.flatMap((p) => p.items).length,
+    36,
+  );
+  assert.equal(service.get(discovery.id).state, "running");
+  const cached = await finished(service, service.startRanking([repo(1)]).id);
+  assert.equal(cached.state, "ready");
+  assert.equal(calls, 1);
+  release();
+  await finished(service, discovery.id);
 });

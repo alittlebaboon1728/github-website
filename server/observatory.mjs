@@ -5,13 +5,18 @@ import { activityData } from "./activity.mjs";
 import { pulseData } from "./pulse.mjs";
 import { createCardService, readPublicReadme } from "./cards.mjs";
 import { createProjectMedia } from "./project-media.mjs";
+import { createImageCache } from "./image-cache.mjs";
+import { createRepositoryMedia } from "./repository-media.mjs";
 import { readAnonymousProject } from "./project-readme.mjs";
 import { createTrialModel } from "./trial-model.mjs";
 import { createTrialService } from "./trials.mjs";
 import { createTrialHandler } from "./trial-http.mjs";
+import { concurrencySetting } from "./task-queue.mjs";
+import { createDiscoveryLibrary } from "./discovery-library.mjs";
+import { createAdminHandler } from "./admin.mjs";
+import { createRecommendationJobs } from "./recommend-jobs.mjs";
 import { calculateGrowth, rankingQuery, recordSnapshot } from "./trends.mjs";
 import {
-  conversationKey,
   createModelClient,
   recommend,
   validateConversation,
@@ -34,11 +39,14 @@ export function createObservatory(config = process.env, dependencies = {}) {
   const model =
     dependencies.model || createModelClient(config, dependencies.fetchImpl);
   const cached = createCache();
+  const images = createImageCache(store, dependencies.fetchImpl);
   const projectMedia = createProjectMedia(
     store,
     dependencies.fetchImpl,
-    github.readPage,
+    github.readPage ? (name) => github.readPage(name, { priority: -20 }) : undefined,
+    images,
   );
+  const media = createRepositoryMedia(projectMedia, images);
   const fetchReadme =
     dependencies.readme ||
     ((repo) => readPublicReadme(repo, github, dependencies.fetchImpl));
@@ -47,9 +55,16 @@ export function createObservatory(config = process.env, dependencies = {}) {
     model,
     store,
     fetchReadme,
+    concurrency: concurrencySetting(config.AI_CARD_CONCURRENCY, 4),
+  });
+  const library = createDiscoveryLibrary({
+    github, cards, store, media,
+    enabled: model.configured && config.DISCOVERY_BACKGROUND === "on",
+    refreshMs: Math.max(60_000, Number(config.DISCOVERY_REFRESH_MINUTES || 30) * 60_000) || 30 * 60_000,
   });
   const trialModel =
     dependencies.trialModel || createTrialModel(config, dependencies.fetchImpl);
+  const adminHandler = createAdminHandler({ library, store, model, trialModel });
   const trialHandler = createTrialHandler(
     createTrialService({
       github,
@@ -59,12 +74,33 @@ export function createObservatory(config = process.env, dependencies = {}) {
     }),
   );
   const attempts = new Map();
-  let activeAi = 0;
   const envelope = (data) => ({
     data,
     source: "live",
     fetchedAt: new Date().toISOString(),
   });
+  async function recommendationMedia(data) {
+    if (!Array.isArray(data.selections)) return data;
+    const repos = await media.decorate(data.selections.map((selection) => selection.repo));
+    return { ...data, selections: data.selections.map((selection, index) => ({ ...selection, repo: repos[index] })) };
+  }
+  const subscribeRecommendation = createRecommendationJobs(
+    async (body, { signal, emit }) =>
+      envelope(
+        await recommendationMedia(await recommend(body, {
+          github,
+          model,
+          fetchReadme,
+          signal,
+          concurrency: concurrencySetting(config.AI_SEARCH_CONCURRENCY, 4),
+          fetchAnonymousProject: (name) =>
+            readAnonymousProject(name, dependencies.fetchImpl),
+          progress: (stage, message) =>
+            emit({ type: "progress", stage, message }),
+          partial: async (data) => emit({ type: "partial", ...envelope(await recommendationMedia(data)) }),
+        })),
+      ),
+  );
   async function trends(params) {
     let q;
     const filters = {
@@ -80,13 +116,22 @@ export function createObservatory(config = process.env, dependencies = {}) {
     const days = Number(params.get("days") || 7);
     if (![1, 7, 30].includes(days))
       throw new GitHubError("趋势窗口仅支持日、周、月。", 400);
-    const result = await github(
+    const pages = library.enabled
+      ? await Promise.all([1, 2, 3].map((page) => library.search({ q, sort: "stars", page })))
+      : null;
+    const result = pages ? {
+      ...pages[0],
+      data: { ...pages[0].data, items: pages.flatMap((page) => page.data.items).slice(0, 30) },
+    } : await github(
       `/search/repositories?${new URLSearchParams({ q, sort: "stars", order: "desc", per_page: "30" })}`,
     );
-    const repos = (result.data.items || []).filter((r) => r.private === false);
+    const pendingCount = pages ? pages.reduce((sum, page) => sum + page.data.pending_count, 0) : 0;
+    // A partially prepared ranking must not renumber rows or record an incomplete daily cohort.
+    const repos = pendingCount ? [] : (result.data.items || []).filter((r) => r.private === false);
+    const summaries = await cards.cached(repos);
     // New-project scope uses an absolute creation-date boundary: a rolling cohort is never compared as the same scope.
     const scope = `v1|${q}|top30-stars`;
-    const history = await recordSnapshot(store, scope, repos, result.fetchedAt);
+    const history = pendingCount ? { enabled: store.enabled, snapshots: [] } : await recordSnapshot(store, scope, repos, result.fetchedAt);
     const growth = history.enabled
       ? calculateGrowth(
           history.snapshots,
@@ -98,7 +143,10 @@ export function createObservatory(config = process.env, dependencies = {}) {
     return {
       ...result,
       data: {
-        repositories: repos,
+        repositories: await media.decorate(repos),
+        cards: summaries,
+        prepared: library.enabled,
+        pending_count: pendingCount,
         query: q,
         scope: `GitHub 搜索按总 stars 排序的前 30 个公开、未归档仓库；受搜索索引延迟影响。${result.warning || ""}`,
         total: result.data.total_count,
@@ -121,14 +169,20 @@ export function createObservatory(config = process.env, dependencies = {}) {
       topic: params.get("topic") || "",
       days: params.get("days") || "7",
     });
-    return cached(`trends:${normalized}`, 300_000, () => trends(normalized));
+    return cached(`trends:${normalized}`, library.enabled ? 2000 : 300_000, () => trends(normalized));
   }
   return {
     github,
+    library,
+    media,
+    startBackground: () => { media.start(); return library.start(); },
+    stopBackground: () => { media.stop(); return library.stop(); },
     async collect() {
       return Promise.allSettled([trends(new URLSearchParams())]);
     },
     async handle(req, res) {
+      if (await adminHandler(req, res)) return true;
+      if (req.url?.startsWith("/api/observatory/images/")) return images.handle(req, res);
       if (!req.url?.startsWith("/api/observatory/")) return false;
       res.setHeader("Content-Type", "application/json; charset=utf-8");
       res.setHeader("Cache-Control", "no-store");
@@ -249,43 +303,34 @@ export function createObservatory(config = process.env, dependencies = {}) {
             if (error instanceof GitHubError) throw error;
             throw new GitHubError("需求格式无效。", 400);
           }
-          if (activeAi >= 2)
-            throw new GitHubError("模型检索正忙，请稍后重试。", 429);
-          res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
-          res.writeHead(200);
-          streaming = true;
+          const buffered = [];
           const emit = (value) => {
+            if (!streaming) {
+              buffered.push(value);
+              return;
+            }
             if (!res.destroyed) res.write(`${JSON.stringify(value)}\n`);
           };
+          const subscription = subscribeRecommendation(body, emit);
+          res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
+          res.setHeader("X-Accel-Buffering", "no");
+          res.writeHead(200);
+          streaming = true;
           emit({
             type: "progress",
             stage: "start",
             message: "请求已收到，正在准备检索或读取近期缓存…",
           });
-          const result = await cached(
-            `ai:${conversationKey(body)}`,
-            600_000,
-            async () => {
-              activeAi++;
-              try {
-                return envelope(
-                  await recommend(body, {
-                    github,
-                    model,
-                    fetchReadme,
-                    fetchAnonymousProject: (name) =>
-                      readAnonymousProject(name, dependencies.fetchImpl),
-                    progress: (stage, message) =>
-                      emit({ type: "progress", stage, message }),
-                  }),
-                );
-              } finally {
-                activeAi--;
-              }
-            },
-          );
-          emit({ type: "result", ...result });
-          res.end();
+          for (const event of buffered) emit(event);
+          res.once("close", subscription.release);
+          try {
+            const result = await subscription.promise;
+            emit({ type: "result", ...result });
+            res.end();
+          } finally {
+            res.off("close", subscription.release);
+            subscription.release();
+          }
           return true;
         }
         if (req.method !== "GET")
@@ -295,20 +340,18 @@ export function createObservatory(config = process.env, dependencies = {}) {
           result = envelope({
             aiConfigured: model.configured,
             cardGeneration: model.configured,
+            discoveryBackground: library.enabled,
             model: model.name,
             persistence: store.enabled,
             trialGeneration: trialModel.configured,
             trialModel: trialModel.name,
           });
+        else if (path === "/catalog") result = envelope(library.enabled ? await library.bootstrap() : { pages: [] });
+        else if (path === "/library/status") result = envelope(await library.status());
         else if (/^\/cards\/jobs\/[a-f0-9]{32}$/.test(path))
           result = envelope(cards.get(path.split("/").at(-1)));
         else if (path === "/project-media")
-          result = await cached(
-            `project-media:${url.searchParams.get("repo")}`,
-            3600_000,
-            async () =>
-              envelope(await projectMedia(url.searchParams.get("repo"))),
-          );
+          result = envelope(await projectMedia(url.searchParams.get("repo")));
         else if (path === "/activity")
           result = await cached("activity", 120_000, () =>
             activityData(github, store),

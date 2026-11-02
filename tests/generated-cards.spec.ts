@@ -61,6 +61,71 @@ function card(n: number) {
     sourceWarning: null,
   };
 }
+
+test("ordinary pagination stays usable during summaries and continues updating earlier pages", async ({
+  page,
+}) => {
+  let firstReady = false;
+  const makePage = (number: number, ready: boolean) => ({
+    number,
+    state: ready ? "ready" : "generating",
+    total: 60,
+    errors: {},
+    items: Array.from({ length: 12 }, (_, i) =>
+      repo((number - 1) * 12 + i + 1),
+    ),
+    cards: ready
+      ? Object.fromEntries(
+          Array.from({ length: 12 }, (_, i) => {
+            const id = (number - 1) * 12 + i + 1;
+            return [`fixture/tool-${id}`, card(id)];
+          }),
+        )
+      : {},
+  });
+  const initial = () => ({
+    id: "initial",
+    state: firstReady ? "ready" : "running",
+    pages: [1, 2, 3].map((n) => makePage(n, firstReady)),
+  });
+  await page.route("**/api/github/**", (route) =>
+    route.fulfill({
+      json: envelope({
+        items: [repo(1)],
+        total_count: 60,
+        incomplete_results: false,
+      }),
+    }),
+  );
+  await page.route("**/api/observatory/**", (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/status"))
+      return route.fulfill({ json: envelope({ cardGeneration: true }) });
+    if (path.endsWith("/cards/pages")) {
+      const body = route.request().postDataJSON();
+      return route.fulfill({
+        json: envelope(
+          body.page === 4
+            ? { id: "more", state: "ready", pages: [makePage(4, true)] }
+            : initial(),
+        ),
+      });
+    }
+    if (path.endsWith("/cards/jobs/initial"))
+      return route.fulfill({ json: envelope(initial()) });
+    return route.fulfill({
+      json: envelope({ events: [], image: null, trials: [] }),
+    });
+  });
+  await page.goto("/");
+  await expect(page.locator(".project-card")).toHaveCount(36);
+  await expect(page.locator(".project-card.has-ai-summary")).toHaveCount(0);
+  await page.getByRole("button", { name: "加载更多项目", exact: true }).click();
+  await expect(page.locator(".project-card")).toHaveCount(48);
+  await expect(page.locator(".project-card.has-ai-summary")).toHaveCount(12);
+  firstReady = true;
+  await expect(page.locator(".project-card.has-ai-summary")).toHaveCount(48);
+});
 test("AI prepares three pages progressively, generates exactly one later page on demand, and reuses Chinese content in quick read and bookmarks", async ({
   page,
 }) => {

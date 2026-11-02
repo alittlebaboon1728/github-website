@@ -284,7 +284,11 @@ export function createTrialService({ github, readme, model, store }) {
             ? "正在修正体验内容与原文依据"
             : "GPT 正在设计使用说明与试用体验",
         );
-        const value = await model.json(trialPrompt, input);
+        const value = await model.json(trialPrompt, input, {
+          onContent: () => change(job, "GPT 正在编写项目说明与试用体验"),
+          onRetry: (number) =>
+            change(job, `模型服务暂时中断，正在自动重试（${number}/2）`),
+        });
         change(job, "正在核对步骤、链接与交互边界");
         try {
           trial = validateTrial(value, repo, source, model.name);

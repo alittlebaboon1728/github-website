@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { buildGitHubPath, GitHubError } from "./github.mjs";
 import { boundedText } from "./storage.mjs";
 import { readmeFromHtml } from "./github-public.mjs";
+import { createTaskQueue } from "./task-queue.mjs";
 
 const VERSION = 2;
 const TTL = 7 * 86400_000;
@@ -148,27 +149,9 @@ export function createCardService({
   const jobs = new Map();
   const activeCards = new Map();
   const memory = new Map();
-  let active = 0;
-  const queue = [];
-  const schedule = (task) =>
-    new Promise((resolve, reject) => {
-      queue.push({ task, resolve, reject });
-      drain();
-    });
-  function drain() {
-    while (active < concurrency && queue.length) {
-      const work = queue.shift();
-      active++;
-      Promise.resolve()
-        .then(work.task)
-        .then(work.resolve, work.reject)
-        .finally(() => {
-          active--;
-          drain();
-        });
-    }
-  }
-  async function generate(repo) {
+  const schedule = createTaskQueue(concurrency);
+  const read = createTaskQueue(3);
+  async function generate(repo, { priority = 0 } = {}) {
     const fingerprint = digest(
       JSON.stringify([
         VERSION,
@@ -189,7 +172,7 @@ export function createCardService({
       ]),
     );
     if (activeCards.has(fingerprint)) return activeCards.get(fingerprint);
-    const operation = schedule(async () => {
+    const operation = (async () => {
       const key = `card-${digest(repo.full_name.toLowerCase())}`;
       const saved =
         memory.get(key) || (await store.read(key).catch(() => null));
@@ -198,6 +181,7 @@ export function createCardService({
         [fingerprint, previousFingerprint].includes(saved.fingerprint) &&
         Date.now() - Date.parse(saved.card.generatedAt) < TTL
       ) {
+        memory.set(key, saved);
         if (saved.fingerprint !== fingerprint) {
           const record = { fingerprint, card: saved.card };
           memory.set(key, record);
@@ -214,9 +198,12 @@ export function createCardService({
           "未读取到 README，本卡仅根据仓库简介生成，详细能力请核对原文。",
       };
       try {
-        const readme = fetchReadme
-          ? await fetchReadme(repo)
-          : await github(`/repos/${repo.full_name}/readme`);
+        const readme = await read(() =>
+          fetchReadme
+            ? fetchReadme(repo)
+            : github(`/repos/${repo.full_name}/readme`),
+          { priority },
+        );
         if (readme.data.content?.trim()) {
           // Preserve the beginning and ending, so long badge sections do not consume the entire source budget.
           const content = readme.data.content;
@@ -258,39 +245,39 @@ export function createCardService({
           homepage: repo.homepage,
         },
         sourceKind: document.kind,
-        source: document.text,
         sourceSegments: document.segments,
       };
-      let card;
-      for (let attempt = 0; attempt < 2; attempt++) {
-        const value = await model.json(prompt, input, {
-          timeout: 90000,
-          maxTokens: 3500,
-        });
-        try {
-          card = validateCard(
-            value,
-            repo,
-            document,
-            model.name || "configured-model",
-          );
-          break;
-        } catch (error) {
-          if (attempt === 1) throw error;
-          input.correction = {
-            error: error.message,
-            previous: value,
-            instruction:
-              "纠正上次结果。evidenceId和每项features.sourceId必须引用sourceSegments中存在的id，如s0。features至少1项且有依据；visual.nodes必须正好3个。title、category、summary、audience、feature标题和说明、start、limitation及visual.caption必须含中文。返回修正后的完整JSON。",
-          };
+      const card = await schedule(async () => {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const value = await model.json(prompt, input, {
+            timeout: 90000,
+            maxTokens: 2200,
+            priority,
+          });
+          try {
+            return validateCard(
+              value,
+              repo,
+              document,
+              model.name || "configured-model",
+            );
+          } catch (error) {
+            if (attempt === 1) throw error;
+            input.correction = {
+              error: error.message,
+              previous: value,
+              instruction:
+                "纠正上次结果。evidenceId和每项features.sourceId必须引用sourceSegments中存在的id，如s0。features至少1项且有依据；visual.nodes必须正好3个。title、category、summary、audience、feature标题和说明、start、limitation及visual.caption必须含中文。返回修正后的完整JSON。",
+            };
+          }
         }
-      }
+      }, { priority });
       const record = { fingerprint, card };
       memory.set(key, record);
       if (memory.size > 1000) memory.delete(memory.keys().next().value);
       await store.update(key, () => record).catch(() => {});
       return card;
-    }).finally(() => activeCards.delete(fingerprint));
+    })().finally(() => activeCards.delete(fingerprint));
     activeCards.set(fingerprint, operation);
     return operation;
   }
@@ -355,6 +342,7 @@ export function createCardService({
     return publicJob(job);
   }
   async function run(job) {
+    const preparations = [];
     for (const page of job.pages) {
       page.state = "searching";
       try {
@@ -385,7 +373,8 @@ export function createCardService({
         page.total = result.data.total_count;
         page.incomplete = Boolean(result.data.incomplete_results);
         page.fetchedAt = result.fetchedAt;
-        await preparePage(page);
+        // Publish all repository pages immediately; summaries fill in independently.
+        preparations.push(preparePage(page));
         if (
           !page.items.length ||
           page.number * 12 >= Math.min(page.total, 1000)
@@ -407,9 +396,33 @@ export function createCardService({
     }
     for (const page of job.pages)
       if (page.state === "queued") page.state = "skipped";
+    await Promise.allSettled(preparations);
     finish(job);
   }
   return {
+    async cached(repositories) {
+      const values = await Promise.all(repositories.map(async (repo) => {
+        const key = `card-${digest(repo.full_name.toLowerCase())}`;
+        const saved = memory.get(key) || await store.read(key).catch(() => null);
+        const card = saved?.card;
+        if (repo.private !== false || card?.fullName?.toLowerCase() !== repo.full_name.toLowerCase() || !/[\u3400-\u9fff]/.test(card?.summary || "")) return null;
+        memory.set(key, saved);
+        if (memory.size > 1000) memory.delete(memory.keys().next().value);
+        return [repo.full_name, card];
+      }));
+      return Object.fromEntries(values.filter(Boolean));
+    },
+    async prepare(repositories, { priority = -10, onCard } = {}) {
+      const results = await Promise.allSettled(repositories.map(async (repo) => {
+        const card = await generate(repo, { priority });
+        await onCard?.(repo, card);
+        return [repo.full_name, card];
+      }));
+      return {
+        cards: Object.fromEntries(results.filter((r) => r.status === "fulfilled").map((r) => r.value)),
+        errors: Object.fromEntries(results.flatMap((r, index) => r.status === "rejected" ? [[repositories[index].full_name, r.reason instanceof GitHubError ? r.reason.message : "中文介绍暂未准备好，服务端将自动重试。"]] : [])),
+      };
+    },
     // Only server-verified ranking repositories reach this method; never accept browser metadata.
     startRanking(repositories) {
       if (!model.configured)

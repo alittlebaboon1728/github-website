@@ -52,6 +52,28 @@ test("text-only README and unsupported media have no placeholder image", () => {
     );
 });
 
+test("camo-wrapped SVG and contributor badges are filtered, and signed attachments use a stable public identity", () => {
+  const camo = (url) =>
+    `https://camo.githubusercontent.com/hash/${Buffer.from(url).toString("hex")}`;
+  for (const original of [
+    "https://railway.app/button.svg",
+    "https://contrib.rocks/image?repo=org/repo",
+  ])
+    assert.equal(
+      selectProjectImage(article(`<img src="${camo(original)}">`), "org/repo"),
+      null,
+    );
+  const id = "fa2cdf79-c933-4b93-844a-b087192261ed";
+  const result = selectProjectImage(
+    article(
+      `<img src="https://private-user-images.githubusercontent.com/123/456-${id}.png?jwt=expired-fixture" alt="项目截图">`,
+    ),
+    "org/repo",
+  );
+  assert.equal(result.url, `https://github.com/user-attachments/assets/${id}`);
+  assert.ok(!result.url.includes("jwt"));
+});
+
 test("media requests validate repository names, coalesce and persist results without model calls", async (t) => {
   const dir = await mkdtemp(join(tmpdir(), "project-media-"));
   t.after(() => rm(dir, { recursive: true, force: true }));

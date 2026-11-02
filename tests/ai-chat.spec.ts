@@ -24,6 +24,10 @@ test.beforeEach(async ({ page }) => {
 test("chat welcome waits for submission, supports multiline and IME, and keeps every reply only within the current chat", async ({
   page,
 }) => {
+  // Plain HTTP on a LAN has getRandomValues but no secure-context randomUUID.
+  await page.addInitScript(() =>
+    Object.defineProperty(crypto, "randomUUID", { value: undefined }),
+  );
   const requests: { turns: string[] }[] = [];
   await page.route("**/api/observatory/recommend", (route) => {
     const body = route.request().postDataJSON();
@@ -164,6 +168,26 @@ test("live progress uses streamed statuses, supports stop and retry, and animate
   await expect(page.locator(".recommendation-item")).toHaveCount(0);
   await page.getByRole("button", { name: "重试", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("正在检索公开仓库");
+  await page.evaluate(
+    (value) =>
+      (window as unknown as { emitChat: (value: unknown) => void }).emitChat(
+        value,
+      ),
+    {
+      type: "partial",
+      ...chatEnvelope({
+        ...chatFixture(),
+        selections: chatFixture().selections.slice(0, 1),
+        partial: true,
+      }),
+    },
+  );
+  await expect(page.locator(".recommendation-item")).toHaveCount(1);
+  await expect(page.locator(".chat-loading-card")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "取消", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".chat-condition-editor")).toHaveCount(0);
   await page.evaluate(
     (value) =>
       (window as unknown as { emitChat: (value: unknown) => void }).emitChat(

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { loadResource, useResource } from "./resourceCache";
 import { ApiError } from "./api";
 import type { ApiEnvelope, RawRepository } from "./api";
+import type { GeneratedCard } from "./generatedCards";
 
 export type ActivityEvent = {
   id: string;
@@ -18,6 +19,9 @@ export type ActivityData = {
   warning?: string;
 };
 export type TrendData = {
+  cards?: Record<string, GeneratedCard>;
+  prepared?: boolean;
+  pending_count?: number;
   repositories: RawRepository[];
   query: string;
   scope: string;
@@ -58,6 +62,7 @@ export type Recommendation = {
   fetchedAt: string;
 };
 export type RecommendationData = {
+  partial?: boolean;
   answer?: {
     text: string;
     quotes: string[];
@@ -104,42 +109,31 @@ export async function contentRequest<T>(
   return body;
 }
 
-const resourceCache = new Map<string, ApiEnvelope<unknown>>();
+export function preloadContent(path: string) {
+  return loadResource(
+    `content:${path}`,
+    (signal) => contentRequest(path, signal),
+    { speculative: true },
+  );
+}
 export function useContent<T>(path: string | null) {
-  const [result, setResult] = useState<ApiEnvelope<T> | null>(null);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [loading, setLoading] = useState(Boolean(path));
-  const [nonce, setNonce] = useState(0);
-  useEffect(() => {
-    if (!path) {
-      setLoading(false);
-      return;
-    }
-    const controller = new AbortController();
-    setResult((resourceCache.get(path) as ApiEnvelope<T>) || null);
-    setLoading(true);
-    setError(null);
-    contentRequest<T>(path, controller.signal)
-      .then((value) => {
-        if (controller.signal.aborted) return;
-        resourceCache.set(path, value);
-        setResult(value);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [path, nonce]);
-  return { result, error, loading, retry: () => setNonce((n) => n + 1) };
+  const state = useResource<ApiEnvelope<T>>(
+    path ? `content:${path}` : null,
+    (signal) => contentRequest<T>(path!, signal),
+  );
+  return {
+    result: state.value || null,
+    loading: state.loading,
+    error: state.error as ApiError | null,
+    retry: state.retry,
+  };
 }
 
 export async function askProjects(
   body: Conversation,
   signal: AbortSignal,
   onProgress: (message: string) => void,
+  onPartial?: (value: ApiEnvelope<RecommendationData>) => void,
 ): Promise<ApiEnvelope<RecommendationData>> {
   let response;
   try {
@@ -175,6 +169,7 @@ export async function askProjects(
         if (!line.trim()) continue;
         const event = JSON.parse(line);
         if (event.type === "progress") onProgress(event.message);
+        if (event.type === "partial") onPartial?.(event);
         if (event.type === "error") throw new ApiError(event.error, 502);
         if (event.type === "result") return event;
       }
@@ -207,7 +202,12 @@ export function usesAi(text: string, mode: SearchMode) {
   );
 }
 export function conversationPath(conversation: Conversation) {
-  return `/ask?${new URLSearchParams({ entry: crypto.randomUUID(), turns: JSON.stringify(conversation.turns), overrides: JSON.stringify(conversation.overrides), ...(conversation.repo ? { repo: conversation.repo } : {}) })}`;
+  // HTTP LAN deployments lack randomUUID (secure-context only), but still
+  // support getRandomValues. This opaque entry id isolates each new dialogue.
+  const entry = Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+  return `/ask?${new URLSearchParams({ entry, turns: JSON.stringify(conversation.turns), overrides: JSON.stringify(conversation.overrides), ...(conversation.repo ? { repo: conversation.repo } : {}) })}`;
 }
 export function readConversation(search: string): Conversation {
   try {

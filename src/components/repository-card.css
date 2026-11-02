@@ -213,10 +213,6 @@
   gap: 24px;
   transition: opacity 180ms ease;
 }
-.discovery-edition .project-grid.browser-updating {
-  opacity: 0.45;
-  pointer-events: none;
-}
 .discovery-edition .project-exhibit {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);

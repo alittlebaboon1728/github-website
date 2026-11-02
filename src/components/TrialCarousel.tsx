@@ -3,6 +3,8 @@ import { ArrowUpRight, Clock3 } from "lucide-react";
 import { trialPath } from "../trials";
 import type { TrialSummary } from "../trials";
 import TrialIllustration from "./TrialIllustration";
+import { trialPresentation } from "../trialPresentation";
+import { preloadTrialLink } from "../navigationPreload";
 
 const nativeTrial: TrialSummary = {
   repo: "excalidraw/excalidraw",
@@ -53,7 +55,7 @@ export default function TrialCarousel({
     loop && !hovered && !focused && !dragging && !reduced && visible && !hidden;
   function go(next: number) {
     const node = track.current;
-    if (!node || !loop) return;
+    if (!node?.isConnected || !node.clientWidth || !loop) return;
     const logical = (next + count) % count;
     const physical =
       activeRef.current === count - 1 && logical === 0
@@ -82,6 +84,7 @@ export default function TrialCarousel({
     });
     let width = node.clientWidth;
     const resize = new ResizeObserver(() => {
+      if (!node.isConnected || !node.clientWidth) return;
       if (width === node.clientWidth) return;
       width = node.clientWidth;
       node.scrollTo({
@@ -91,7 +94,7 @@ export default function TrialCarousel({
     });
     resize.observe(node);
     function settle() {
-      if (!loop || !node) return;
+      if (!loop || !node?.isConnected || !node.clientWidth) return;
       const position = node.scrollLeft / node.clientWidth;
       if (Math.abs(position - Math.round(position)) > 0.01) return;
       // The extra end slide looks identical: normalize only after movement finishes.
@@ -101,6 +104,8 @@ export default function TrialCarousel({
         node.scrollTo({ left: node.clientWidth, behavior: "instant" });
     }
     function onScroll() {
+      // A queued scroll can arrive while a route is being removed or hidden.
+      if (!node?.isConnected || !node.clientWidth) return;
       const position = Math.round(node!.scrollLeft / node!.clientWidth);
       const next = loop ? (((position - 1) % count) + count) % count : 0;
       activeRef.current = next;
@@ -179,6 +184,7 @@ export default function TrialCarousel({
         }}
       >
         {slides.map((trial, position) => {
+          const story = trialPresentation(trial);
           const logical = loop ? (position - 1 + count) % count : 0;
           const clone = loop && (position === 0 || position === count + 1);
           return (
@@ -194,6 +200,9 @@ export default function TrialCarousel({
             >
               <a
                 className="trial-feature"
+                onPointerEnter={() => preloadTrialLink(trial.repo)}
+                onFocus={() => preloadTrialLink(trial.repo)}
+                onTouchStart={() => preloadTrialLink(trial.repo)}
                 href={
                   trial.repo === nativeTrial.repo
                     ? "#/project/excalidraw/excalidraw"
@@ -201,13 +210,15 @@ export default function TrialCarousel({
                 }
               >
                 <div className="trial-feature-copy">
-                  <span className="trial-kind">
-                    {trial.repo === nativeTrial.repo
-                      ? "真实白板"
-                      : "项目上手体验"}
-                  </span>
+                  <span className="trial-kind">{story.format}</span>
                   <h2>{trial.name}</h2>
-                  <p className="trial-feature-description">{trial.title}</p>
+                  <p className="trial-feature-description">
+                    {story.title
+                      .match(/[^，？。]+[，？。]?/g)
+                      ?.map((clause, i) => (
+                        <span key={i}>{clause}</span>
+                      ))}
+                  </p>
                   <p>{trial.summary}</p>
                   <div className="trial-feature-tags">
                     <span>

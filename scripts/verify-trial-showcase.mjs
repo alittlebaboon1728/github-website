@@ -1,7 +1,19 @@
 import { chromium, expect } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-const base = "http://127.0.0.1:5173";
-const output = "docs/screenshots/trial-showcase";
+const base = process.env.VERIFY_BASE_URL || "http://127.0.0.1:5173";
+const catalogBase =
+  process.env.VERIFY_CATALOG_BASE_URL || "http://127.0.0.1:4173";
+const output = "docs/screenshots/trial-posters";
+const response = await fetch(`${catalogBase}/api/observatory/trials`);
+if (!response.ok) throw new Error(`Saved trial catalog: ${response.status}`);
+const { data: catalog } = await response.json();
+const projects = [
+  "Excalidraw",
+  ...catalog.trials
+    .filter((trial) => trial.repo.toLowerCase() !== "excalidraw/excalidraw")
+    .slice(0, 2)
+    .map((trial) => trial.name),
+];
 await mkdir(output, { recursive: true });
 const checks = [];
 const browser = await chromium.launch({ channel: "msedge", headless: true });
@@ -24,10 +36,11 @@ try {
       page.on("request", (request) => {
         if (request.method() === "POST") posts.push(request.url());
       });
-      // Read the real saved catalog; keep unrelated homepage services deterministic.
+      // Use a GET snapshot of saved production content, with no model requests.
       await page.route("**/api/observatory/**", (route) => {
         const path = new URL(route.request().url()).pathname;
-        if (path.endsWith("/trials")) return route.continue();
+        if (path.endsWith("/trials"))
+          return route.fulfill({ json: { data: catalog } });
         const data = path.endsWith("/status")
           ? { cardGeneration: false }
           : path.endsWith("/trends")
@@ -51,7 +64,9 @@ try {
         await page.goto(`${base}/#/${route}`);
         const carousel = page.getByRole("region", { name: "精选项目试用" });
         await expect(
-          carousel.getByRole("button", { name: "查看 marked 试用横幅" }),
+          carousel.getByRole("button", {
+            name: `查看 ${projects[0]} 试用横幅`,
+          }),
         ).toBeVisible();
         await carousel.evaluate((element) =>
           window.scrollTo({
@@ -59,7 +74,7 @@ try {
           }),
         );
         await page.evaluate(() => document.fonts.ready);
-        for (const project of ["Excalidraw", "marked", "jq"]) {
+        for (const project of projects) {
           await carousel
             .getByRole("button", { name: `查看 ${project} 试用横幅` })
             .click();
@@ -84,14 +99,12 @@ try {
         if (name === "library") {
           await expect(
             page.locator(".trial-library-card .trial-illustration"),
-          ).toHaveCount(3);
-          await page
-            .locator(".trial-shelf")
-            .evaluate((element) =>
-              window.scrollTo({
-                top: element.getBoundingClientRect().top + scrollY - 105,
-              }),
-            );
+          ).toHaveCount(catalog.trials.length);
+          await page.locator(".trial-shelf").evaluate((element) =>
+            window.scrollTo({
+              top: element.getBoundingClientRect().top + scrollY - 105,
+            }),
+          );
           await page.waitForTimeout(250);
           await page.screenshot({
             path: `${output}/cards-${theme}-${width}.png`,
@@ -99,7 +112,7 @@ try {
           for (const card of await page.locator(".trial-library-card").all()) {
             await card.scrollIntoViewIfNeeded();
             await card.screenshot({
-              path: `${output}/card-${await card.locator("h3").innerText()}-${theme}-${width}.png`,
+              path: `${output}/card-${(await card.locator(".trial-card-project small").innerText()).replaceAll("/", "-")}-${theme}-${width}.png`,
             });
           }
         }
@@ -109,7 +122,7 @@ try {
           page: name,
           theme,
           width,
-          projects: ["Excalidraw", "marked", "jq"],
+          projects,
           errors: [...errors],
           posts: [...posts],
           passed: true,

@@ -5,9 +5,11 @@ import { useDropletIndicator } from "../useDropletIndicator";
 export default function CategoryFilters({
   active,
   onChange,
+  onIntent,
 }: {
   active: string | null;
   onChange: (id: string) => void;
+  onIntent?: (id: string) => void;
 }) {
   const group = useRef<HTMLDivElement>(null);
   const droplet = useRef<HTMLSpanElement>(null);
@@ -27,6 +29,9 @@ export default function CategoryFilters({
           className="bare-control"
           aria-pressed={active === category.id}
           onClick={() => onChange(category.id)}
+          onPointerEnter={() => onIntent?.(category.id)}
+          onFocus={() => onIntent?.(category.id)}
+          onTouchStart={() => onIntent?.(category.id)}
         >
           {category.id === "all" ? "全部" : category.name}
         </button>

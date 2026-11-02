@@ -1,7 +1,10 @@
+import categoryDefinitions from "../shared/discovery-categories.json";
 import snapshot from "./repository-snapshot.json";
 import type { GeneratedCard } from "./generatedCards";
+import type { ProjectMedia } from "./projectMedia";
 
 export type Repository = {
+  media?: ProjectMedia;
   generated?: GeneratedCard;
   id: string;
   owner: string;
@@ -33,44 +36,7 @@ export const exampleRepo = snapshotRepos.find(
 export function hasProjectTrial(fullName: string) {
   return fullName.toLowerCase() === "excalidraw/excalidraw";
 }
-export const categories = [
-  {
-    id: "all",
-    name: "全部项目",
-    query: "is:public",
-    icon: "compass",
-  },
-  {
-    id: "ai",
-    name: "AI 与智能",
-    query: "topic:artificial-intelligence",
-    icon: "spark",
-  },
-  {
-    id: "dev",
-    name: "开发者工具",
-    query: "topic:developer-tools",
-    icon: "terminal",
-  },
-  {
-    id: "design",
-    name: "设计与创意",
-    query: "topic:design-tools",
-    icon: "pen",
-  },
-  {
-    id: "web",
-    name: "网站与应用",
-    query: "topic:web-application",
-    icon: "globe",
-  },
-  {
-    id: "data",
-    name: "数据与后端",
-    query: "topic:database",
-    icon: "database",
-  },
-];
+export const categories = categoryDefinitions;
 export const editorial: Record<
   string,
   { summary: string; audience: string; label: string }
