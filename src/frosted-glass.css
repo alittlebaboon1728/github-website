@@ -603,12 +603,95 @@
   :root .observatory-shell.discovery-edition .site-tools {
     margin-left: auto;
   }
-  :root .observatory-shell.discovery-edition .site-navigation.mobile-open {
+  :root .observatory-shell.discovery-edition .site-navigation {
     top: calc(100% + 10px);
     left: 0;
     right: 0;
     padding: 8px;
     border-radius: 24px;
+    background: var(--glass-sheen), var(--glass-sheet);
+    border: 1px solid var(--glass-edge);
+    box-shadow: var(--glass-panel-shadow);
+  }
+  :root .observatory-shell.discovery-edition .site-tools .header-control {
+    background: var(--glass-sheen), var(--glass-primary);
+    border-color: color-mix(in srgb, var(--text) 14%, var(--glass-edge));
+    box-shadow: var(--glass-control-shadow);
+  }
+  :root .observatory-shell.discovery-edition .site-tools .header-control:hover,
+  :root
+    .observatory-shell.discovery-edition
+    .site-tools
+    .header-control[aria-expanded="true"] {
+    background: var(--glass-sheen), var(--glass-selected);
+    color: var(--forest);
+  }
+}
+@media (max-width: 760px) {
+  :root .observatory-shell.discovery-edition .filter-disclosure > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    list-style: none;
+    cursor: pointer;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary::marker {
+    content: "";
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary::-webkit-details-marker {
+    display: none;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary
+    > svg {
+    display: block;
+    flex: none;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure--icon
+    > summary {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary:focus-visible {
+    outline: 2px solid var(--forest);
+    outline-offset: 3px;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    .disclosure-chevron {
+    transition: rotate 180ms ease;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure[open]
+    .disclosure-chevron {
+    rotate: 90deg;
+  }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    .disclosure-chevron {
+    transition: none;
   }
 }
 @media (max-width: 600px) {

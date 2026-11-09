@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { ChevronRight, SlidersHorizontal } from "lucide-react";
 
 export default function FilterDisclosure({
   label,
@@ -25,7 +25,10 @@ export default function FilterDisclosure({
     return () => media.removeEventListener("change", change);
   }, []);
   return (
-    <details className="filter-disclosure" open={expanded}>
+    <details
+      className={`filter-disclosure${iconOnly ? " filter-disclosure--icon" : ""}`}
+      open={expanded}
+    >
       <summary
         aria-label={label}
         title={iconOnly ? label : undefined}
@@ -37,7 +40,18 @@ export default function FilterDisclosure({
           );
         }}
       >
-        {iconOnly ? <SlidersHorizontal size={17} aria-hidden="true" /> : label}
+        {iconOnly ? (
+          <SlidersHorizontal size={17} aria-hidden="true" />
+        ) : (
+          <>
+            <ChevronRight
+              className="disclosure-chevron"
+              size={16}
+              aria-hidden="true"
+            />
+            <span>{label}</span>
+          </>
+        )}
       </summary>
       {children}
     </details>

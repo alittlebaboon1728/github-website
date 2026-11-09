@@ -269,6 +269,21 @@ test("mobile ranking filters start folded and all controls, summaries and real t
   await page.setViewportSize({ width: 360, height: 900 });
   await page.goto("/#/trends");
   await expect(page.getByLabel("榜单语言", { exact: true })).not.toBeVisible();
+  const disclosure = page.locator(".filter-disclosure > summary");
+  const alignment = await disclosure.evaluate((el) => {
+    const control = el.getBoundingClientRect(),
+      icon = el.querySelector("svg")!.getBoundingClientRect();
+    return {
+      inset: icon.x - control.x,
+      centerError: Math.abs(
+        icon.y + icon.height / 2 - control.y - control.height / 2,
+      ),
+      marker: getComputedStyle(el).listStyleType,
+    };
+  });
+  expect(alignment.inset).toBeGreaterThanOrEqual(16);
+  expect(alignment.centerError).toBeLessThan(1);
+  expect(alignment.marker).toBe("none");
   await page.getByText("筛选榜单范围", { exact: true }).click();
   await expect(page.getByLabel("榜单语言", { exact: true })).toBeVisible();
   await expect(page.locator(".ranking-row")).toContainText("AI 中文总结");

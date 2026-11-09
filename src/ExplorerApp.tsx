@@ -123,6 +123,8 @@ export default function ExplorerApp() {
   const [route, setRoute] = useState(parseRoute);
   const [dark, setDark] = useState(() => stored("gh-design-dark", false));
   const [sidebar, setSidebar] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [previewRepo, setPreviewRepo] = useState<Repository | null>(null);
   const [previewCollection, setPreviewCollection] = useState<
     Repository[] | null
@@ -227,7 +229,6 @@ export default function ExplorerApp() {
           ? navigationCache.current.get(next.search)
           : null;
       setRoute(next);
-      setSidebar(false);
       setPreviewRepo(null);
       setPreviewCollection(null);
       previewRequest.current?.abort();
@@ -250,6 +251,33 @@ export default function ExplorerApp() {
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
   }, []);
+  useEffect(() => {
+    if (!sidebar) return;
+    const outside = (event: Event) => {
+      if (
+        window.matchMedia("(max-width: 820px)").matches &&
+        event.target instanceof Node &&
+        !headerRef.current?.contains(event.target)
+      )
+        setSidebar(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setSidebar(false);
+      menuButtonRef.current?.focus({ preventScroll: true });
+    };
+    // User gestures dismiss the menu; route-driven scroll restoration does not.
+    document.addEventListener("pointerdown", outside, true);
+    document.addEventListener("touchmove", outside, { passive: true });
+    document.addEventListener("wheel", outside, { passive: true });
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", outside, true);
+      document.removeEventListener("touchmove", outside);
+      document.removeEventListener("wheel", outside);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [sidebar]);
   useEffect(() => {
     setDraft(browseQuery);
   }, [browseQuery]);
@@ -276,7 +304,6 @@ export default function ExplorerApp() {
         setPreviewRepo(null);
         setSearchOpen((v) => !v);
       }
-      if (e.key === "Escape") setSidebar(false);
     }
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
@@ -407,7 +434,7 @@ export default function ExplorerApp() {
       >
         跳到内容
       </a>
-      <header className="site-header">
+      <header className="site-header" ref={headerRef}>
         <div className="site-header-inner">
           <a
             className="site-brand"
@@ -434,7 +461,7 @@ export default function ExplorerApp() {
           />
           <div className="site-tools">
             <button
-              className="icon-btn"
+              className="icon-btn header-control"
               aria-label={dark ? "切换浅色主题" : "切换深色主题"}
               onClick={() => setDark(!dark)}
             >
@@ -450,7 +477,8 @@ export default function ExplorerApp() {
               <Github size={18} />
             </a>
             <button
-              className="icon-btn nav-menu"
+              ref={menuButtonRef}
+              className="icon-btn header-control nav-menu"
               aria-label={sidebar ? "关闭导航" : "打开导航"}
               aria-expanded={sidebar}
               aria-controls="project-navigation"

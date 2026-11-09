@@ -625,7 +625,8 @@ test("responsive navigation, dark mode and no horizontal overflow", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  // Header behavior does not depend on external fixture images finishing.
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "打开导航" }).click();
   await page.getByRole("link", { name: "项目试用", exact: true }).click();
   await expect(
@@ -641,8 +642,156 @@ test("responsive navigation, dark mode and no horizontal overflow", async ({
       ),
     ).toBe(true);
   }
-  await page.reload();
+  await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+
+test("mobile navigation stays expanded and mounted while the droplet travels between pages", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/discover");
+  const nav = page.locator("#project-navigation");
+  const header = page.locator(".site-header-inner");
+  const originalHeader = await header.elementHandle();
+  const originalDroplet = await nav
+    .locator(".navigation-droplet")
+    .elementHandle();
+  await page.getByRole("button", { name: "打开导航", exact: true }).click();
+  await expect
+    .poll(() => nav.evaluate((el) => el.getAnimations().length))
+    .toBe(0);
+  const before = await header.boundingBox();
+  for (const name of ["我的收藏", "趋势与榜单", "项目试用", "发现项目"]) {
+    await nav.getByRole("link", { name, exact: true }).click();
+    await expect(nav.locator('[aria-current="page"]')).toHaveText(name);
+    await expect(
+      page.getByRole("button", { name: "关闭导航", exact: true }),
+    ).toHaveAttribute("aria-expanded", "true");
+    await expect(nav).not.toHaveAttribute("inert");
+    await expect
+      .poll(() =>
+        nav
+          .locator(".navigation-droplet")
+          .evaluate((el) => el.getAnimations().length),
+      )
+      .toBe(1);
+    const middle = await nav.locator(".navigation-droplet").evaluate((el) => {
+      const animation = el.getAnimations()[0];
+      animation.pause();
+      animation.currentTime =
+        Number(animation.effect!.getTiming().duration) * 0.42;
+      return new DOMMatrixReadOnly(getComputedStyle(el).transform).a;
+    });
+    expect(middle).toBeGreaterThan(1);
+    expect(await header.boundingBox()).toEqual(before);
+    expect(
+      await header.evaluate((el, original) => el === original, originalHeader),
+    ).toBe(true);
+    expect(
+      await nav
+        .locator(".navigation-droplet")
+        .evaluate((el, original) => el === original, originalDroplet),
+    ).toBe(true);
+  }
+  await page.goBack();
+  await expect(nav.locator('[aria-current="page"]')).toHaveText("项目试用");
+  await expect(page.getByRole("button", { name: "关闭导航" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+});
+
+test("mobile menu animates both ways, survives route scrolling and dismisses on outside gestures or Escape", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/discover");
+  const nav = page.locator("#project-navigation");
+  await expect(nav).toHaveAttribute("inert");
+  await page.getByRole("button", { name: "打开导航", exact: true }).click();
+  await expect
+    .poll(() => nav.evaluate((el) => el.getAnimations().length))
+    .toBeGreaterThan(0);
+  const sample = () =>
+    nav.evaluate((el) => {
+      for (const animation of el.getAnimations()) {
+        animation.pause();
+        animation.currentTime =
+          Number(animation.effect!.getTiming().duration) / 2;
+      }
+      return Number(getComputedStyle(el).opacity);
+    });
+  const opening = await sample();
+  expect(opening).toBeGreaterThan(0);
+  expect(opening).toBeLessThan(1);
+  await nav.evaluate((el) =>
+    el.getAnimations().forEach((animation) => animation.finish()),
+  );
+  await page.evaluate(() => {
+    window.scrollTo(0, 100);
+    window.dispatchEvent(new Event("scroll"));
+  });
+  await expect(nav).not.toHaveAttribute("inert");
+  await page.getByRole("button", { name: "关闭导航", exact: true }).click();
+  await expect(nav).toHaveAttribute("inert");
+  const closing = await sample();
+  expect(closing).toBeGreaterThan(0);
+  expect(closing).toBeLessThan(1);
+  // Reopen during the exit transition without unmounting the links.
+  await page.getByRole("button", { name: "打开导航", exact: true }).click();
+  await expect(nav).not.toHaveAttribute("inert");
+  await nav.getByRole("link", { name: "我的收藏", exact: true }).focus();
+  await page.keyboard.press("Escape");
+  await expect(
+    page.getByRole("button", { name: "打开导航", exact: true }),
+  ).toBeFocused();
+  for (const event of ["pointerdown", "touchmove", "wheel"]) {
+    await page.getByRole("button", { name: "打开导航", exact: true }).click();
+    await page.locator("main").dispatchEvent(event);
+    await expect(nav).toHaveAttribute("inert");
+    await expect(
+      page.getByRole("button", { name: "打开导航", exact: true }),
+    ).toHaveAttribute("aria-expanded", "false");
+  }
+});
+
+test("mobile filter and header icons are centered in visible 44px controls in both themes", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/#/discover");
+  for (const dark of [false, true]) {
+    if (dark) await page.getByRole("button", { name: "切换深色主题" }).click();
+    const controls = page.locator(
+      ".site-tools .header-control, .filter-disclosure--icon > summary",
+    );
+    const geometry = await controls.evaluateAll((elements) =>
+      elements.map((el) => {
+        const control = el.getBoundingClientRect(),
+          icon = el.querySelector("svg")!.getBoundingClientRect(),
+          style = getComputedStyle(el);
+        return {
+          width: control.width,
+          height: control.height,
+          dx: Math.abs(control.x + control.width / 2 - icon.x - icon.width / 2),
+          dy: Math.abs(
+            control.y + control.height / 2 - icon.y - icon.height / 2,
+          ),
+          border: style.borderStyle,
+          background: style.backgroundImage,
+        };
+      }),
+    );
+    expect(geometry).toHaveLength(3);
+    for (const item of geometry) {
+      expect(item.width).toBe(44);
+      expect(item.height).toBe(44);
+      expect(item.dx + item.dy).toBeLessThan(1);
+      expect(item.border).toBe("solid");
+      expect(item.background).not.toBe("none");
+    }
+  }
 });
 
 test("navigation stays still while one glass droplet travels, including interrupted clicks and bookmarks", async ({
@@ -1115,18 +1264,50 @@ test("cards show actual README media, omit absent or broken images, and keep the
   ).toHaveLength(1);
 });
 
-test("prepared local thumbnails render without metadata waterfalls and retain dimensions in quick read", async ({ page }) => {
+test("prepared local thumbnails render without metadata waterfalls and retain dimensions in quick read", async ({
+  page,
+}) => {
   const url = "/api/observatory/images/" + "a".repeat(64) + ".webp";
   const repositories = ["cached-picture", "text-only"].map((name, index) => ({
-    ...raw(first), id: 999970 + index, name, full_name: `image-speed/${name}`,
+    ...raw(first),
+    id: 999970 + index,
+    name,
+    full_name: `image-speed/${name}`,
     owner: { login: "image-speed", avatar_url: "" },
-    media: { image: index ? null : { url, srcSet: `${url} 960w`, width: 960, height: 160, alt: "已缓存的界面截图", sourceUrl: "https://github.com/image-speed/cached-picture#readme" } },
+    media: {
+      image: index
+        ? null
+        : {
+            url,
+            srcSet: `${url} 960w`,
+            width: 960,
+            height: 160,
+            alt: "已缓存的界面截图",
+            sourceUrl: "https://github.com/image-speed/cached-picture#readme",
+          },
+    },
   }));
-  await page.route("**/api/github/search?*", (route) => route.fulfill({ json: envelope({ items: repositories, total_count: 2, incomplete_results: false }) }));
-  const thumbnail = await sharp({ create: { width: 480, height: 80, channels: 3, background: "#567894" } }).webp().toBuffer();
-  await page.route("**/api/observatory/images/*.webp", (route) => route.fulfill({ body: thumbnail, contentType: "image/webp" }));
+  await page.route("**/api/github/search?*", (route) =>
+    route.fulfill({
+      json: envelope({
+        items: repositories,
+        total_count: 2,
+        incomplete_results: false,
+      }),
+    }),
+  );
+  const thumbnail = await sharp({
+    create: { width: 480, height: 80, channels: 3, background: "#567894" },
+  })
+    .webp()
+    .toBuffer();
+  await page.route("**/api/observatory/images/*.webp", (route) =>
+    route.fulfill({ body: thumbnail, contentType: "image/webp" }),
+  );
   const metadata: string[] = [];
-  page.on("request", (request) => { if (request.url().includes("/project-media?")) metadata.push(request.url()); });
+  page.on("request", (request) => {
+    if (request.url().includes("/project-media?")) metadata.push(request.url());
+  });
   await page.goto("/");
   const cards = page.locator(".project-card");
   await expect(cards).toHaveCount(2);
@@ -1138,8 +1319,13 @@ test("prepared local thumbnails render without metadata waterfalls and retain di
   await expect(cover).toHaveAttribute("decoding", "async");
   await expect(cover).toHaveJSProperty("complete", true);
   await expect(cards.nth(1).locator(".trend-card-cover")).toHaveCount(0);
-  await cards.first().getByRole("button", { name: "查看 cached-picture 的项目配图" }).click();
-  await expect(page.getByRole("dialog").locator(".trend-card-cover img")).toHaveAttribute("src", url);
+  await cards
+    .first()
+    .getByRole("button", { name: "查看 cached-picture 的项目配图" })
+    .click();
+  await expect(
+    page.getByRole("dialog").locator(".trend-card-cover img"),
+  ).toHaveAttribute("src", url);
   expect(metadata).toEqual([]);
 });
 

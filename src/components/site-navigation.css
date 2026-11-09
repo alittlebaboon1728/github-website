@@ -90,20 +90,63 @@ html {
   :root .observatory-shell.discovery-edition .site-navigation {
     --navigation-link-height: 44px;
     --navigation-link-padding: 0 2px;
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px;
     position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
     width: auto;
     margin-left: 0;
+    padding: 8px;
+    border-radius: 24px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.98, 0.94);
+    transform-origin: top right;
+    clip-path: inset(0 0 100% 0 round 24px);
+    transition:
+      opacity 160ms ease,
+      transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      clip-path 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 240ms;
   }
   :root .observatory-shell.discovery-edition .site-tools .nav-menu {
     display: inline-flex;
   }
   :root .observatory-shell.discovery-edition .site-navigation.mobile-open {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 2px;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    clip-path: inset(-40px round 24px);
+    transition-delay: 0s;
   }
   :root .observatory-shell.discovery-edition .site-navigation > a {
     font-size: 11px;
+  }
+  :root .observatory-shell.discovery-edition .site-tools .header-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+  :root .observatory-shell.discovery-edition .site-tools {
+    gap: 8px;
+  }
+  :root .observatory-shell.discovery-edition .header-control > svg {
+    display: block;
+    flex: none;
+  }
+}
+@media (max-width: 820px) and (prefers-reduced-motion: reduce) {
+  :root .observatory-shell.discovery-edition .site-navigation {
+    transition: none;
   }
 }
