@@ -1,0 +1,172 @@
+{
+  "sourceCommit": "e26957a",
+  "captured": "2026-11-09",
+  "lineEndings": "LF",
+  "files": [
+    {
+      "path": "src/main.tsx",
+      "bytes": 979,
+      "sha256": "2de75a43deb2869a3b9e68becdf7bb0192b084dcd339d294219dfcff3b7dc753"
+    },
+    {
+      "path": "src/explorer.css",
+      "bytes": 65678,
+      "sha256": "3b180c2943fbd1d7eab88c01ee5fef8924e39238b992fefa4c0924e59783852c"
+    },
+    {
+      "path": "src/discovery.css",
+      "bytes": 51715,
+      "sha256": "336d3f8e84e70d162bf40b5b66590eb56a457ee9a3bed53c35950bf0f4bd5774"
+    },
+    {
+      "path": "src/iteration.css",
+      "bytes": 17907,
+      "sha256": "3ad51a8dff9feec165ba065b226ca008357f636d0433142236175793eae1e133"
+    },
+    {
+      "path": "src/refined-theme.css",
+      "bytes": 30885,
+      "sha256": "79098d64b9c8fa11510ed0e036e9718207857912077b92389d273f858543c408"
+    },
+    {
+      "path": "src/frosted-glass.css",
+      "bytes": 30187,
+      "sha256": "a9ee1cc7ef519ee81d2c31613c989ae8e9f4a2ae4499fc949783dd3bade7f5cf"
+    },
+    {
+      "path": "src/liquid-refraction.css",
+      "bytes": 2573,
+      "sha256": "c08888a4b053be2ef85ad276764055aab40c58d7cf63b1b6164af306bc5728b0"
+    },
+    {
+      "path": "src/components/repository-card.css",
+      "bytes": 13608,
+      "sha256": "ba94e59847a6de144761203273d9577e55cfa938869a1e6216d9729f1a3772e4"
+    },
+    {
+      "path": "src/components/trend-project-card.css",
+      "bytes": 6299,
+      "sha256": "318c9040ff0a3aa97d03a16e72bdbec71e5759742a412c4cd99c5a85562df2b3"
+    },
+    {
+      "path": "src/components/demand-chat.css",
+      "bytes": 19996,
+      "sha256": "f3adede29def16fb6a4c0827ea31de97afdfc18a299f4c654454bd3161c37743"
+    },
+    {
+      "path": "src/components/rankings.css",
+      "bytes": 10601,
+      "sha256": "ba3436656def18552b66f9b213e8f23518045a92ee2125b562cbb409510fc619"
+    },
+    {
+      "path": "src/components/trials.css",
+      "bytes": 22712,
+      "sha256": "943ad1c96170e1a4f82c42fb0348d841080bda122aef5e21ded79b33f9bd936c"
+    },
+    {
+      "path": "src/components/project-reader.css",
+      "bytes": 10672,
+      "sha256": "411c8e64f9ad4cbc4f221a620bd48e4a6424ed20f3c56a47f4fc0a56d874baed"
+    },
+    {
+      "path": "src/components/trial-showcase.css",
+      "bytes": 9205,
+      "sha256": "92a2b6194eb0fd9adce89888e492a354f76a40b6986cdab599e9b72f6d82bb88"
+    },
+    {
+      "path": "src/components/site-navigation.css",
+      "bytes": 4278,
+      "sha256": "c82c6ac010ebe9c4dfcbf2fbde51a8e914aa2519f0d365d6591f7294d71b590a"
+    },
+    {
+      "path": "src/components/discovery-hero.css",
+      "bytes": 1784,
+      "sha256": "2fdcd2b3785ab06a3c23b11b059d6ff4144443519ed69bba308c2fea7bf63112"
+    },
+    {
+      "path": "src/components/GitHubPulse/pulse.css",
+      "bytes": 8033,
+      "sha256": "a829bb8a785ab57ca1aabb0f2e74cffaeabe6078c71a1e9060e23e844681469a"
+    },
+    {
+      "path": "src/admin/admin.css",
+      "bytes": 13366,
+      "sha256": "11be84557e8c67c3dda87b92e0c6df15e908cee3dd57b04b988553d517363541"
+    },
+    {
+      "path": "src/admin/main.tsx",
+      "bytes": 354,
+      "sha256": "edca0c9e26eb8e25dbc1ce547b81616cf230bc4fbd47fe336aea7f22e221854b"
+    },
+    {
+      "path": "src/components/GlassTabs.tsx",
+      "bytes": 866,
+      "sha256": "3ca0a23ec5222cfbdda7dc10c0ae6755f9870aed21fa3e00858a1c673ed71819"
+    },
+    {
+      "path": "src/components/GlassButton.tsx",
+      "bytes": 588,
+      "sha256": "683d556b528d1618c4b1463b3bc65f9b0540e7577f46b5f61366e8a8df0a8be6"
+    },
+    {
+      "path": "src/components/SiteNavigation.tsx",
+      "bytes": 2200,
+      "sha256": "88d5748560f88d85de3b6a2b5e596af4a511dc8a146087fa155c8b60307ec549"
+    },
+    {
+      "path": "src/components/FilterDisclosure.tsx",
+      "bytes": 1561,
+      "sha256": "da2247e1ecde0c82f1af3981cc8bf772438bee2db53de177aafb550204a9f60e"
+    },
+    {
+      "path": "src/components/TrialIllustration.tsx",
+      "bytes": 11443,
+      "sha256": "1bc466b3e0f44a4ff8170ee14510dfc8a9c5201e121d4369b1c8754d387a3b8f"
+    },
+    {
+      "path": "src/components/TrialCarousel.tsx",
+      "bytes": 9735,
+      "sha256": "1f73243c86f1e644c450ceb1d8cf695a47e383fb7e26545db8550a27d086b498"
+    },
+    {
+      "path": "src/useDropletIndicator.ts",
+      "bytes": 4417,
+      "sha256": "95e4014982a147653ee4e714b0ac7870f485af3bfd6073b5399d7ba93495bbb2"
+    },
+    {
+      "path": "src/useGlassLight.ts",
+      "bytes": 2995,
+      "sha256": "eaf45219fa212937e5dcbb66be2f057795175fb0d07e919e3b4c126943358ee1"
+    },
+    {
+      "path": "src/useLiquidRefraction.ts",
+      "bytes": 436,
+      "sha256": "b4b816074a2bb0e63abbb8cd3ac28e76f1af3c2a77029f04897bd2b4deed7923"
+    },
+    {
+      "path": "src/liquidGlassController.ts",
+      "bytes": 12301,
+      "sha256": "07bc97c8b40a67288d562ff16ebd1eec7c1eb83dd64114b4c009c72da83d3698"
+    },
+    {
+      "path": "src/vendor/liquid-glass-html/displacement.js",
+      "bytes": 4282,
+      "sha256": "2bb7cd2d5ba4272e904b110a580833964e0695f7a3955bf153089fbf0cbce51b"
+    },
+    {
+      "path": "src/vendor/liquid-glass-html/displacement.d.ts",
+      "bytes": 361,
+      "sha256": "e4c866ee7a06985862bf271a7c79a2fbf11c3c5f53a28ef4a8d53d936a933d63"
+    },
+    {
+      "path": "src/vendor/liquid-glass-html/LICENSE",
+      "bytes": 1064,
+      "sha256": "175f118b5d4aa6b224347d5bba4edf9414229549d7a2100f318ea8ae52568904"
+    },
+    {
+      "path": "src/vendor/liquid-glass-html/Thanks.txt",
+      "bytes": 83,
+      "sha256": "2e32691c25dc666c40847f50f2f15ecbaaacfb2f4022c6c658f14f3b5c5c744c"
+    }
+  ]
+}

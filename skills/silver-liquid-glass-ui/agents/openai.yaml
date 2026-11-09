@@ -1,0 +1,4 @@
+interface:
+  display_name: "银灰液态玻璃 UI"
+  short_description: "复用开源观测站的银灰玻璃、深浅主题、连续水滴导航和手机交互风格"
+  default_prompt: "使用 $silver-liquid-glass-ui，为当前项目复现这套银灰液态玻璃界面，保留现有业务内容。"

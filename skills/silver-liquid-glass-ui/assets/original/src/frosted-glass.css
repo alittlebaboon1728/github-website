@@ -1,0 +1,1100 @@
+/* Liquid Glass-inspired optical surfaces. The content remains a separate, sharp layer. */
+:root {
+  --page: #f3f4f5;
+  --card: #fafbfc;
+  --text: #202326;
+  --secondary: #5c6268;
+  --muted: #626a72;
+  --border: #cdd2d94d;
+  --soft: #e7eaed;
+  --forest: #28685e;
+  --sage: #e0ebe7;
+  --button-bg: #ffffff70;
+  --button-hover: #ffffffa3;
+  --button-text: var(--forest);
+  --glass-primary: #ffffff70;
+  --glass-primary-hover: #ffffffa3;
+  --control-height: 44px;
+  --control-padding-inline: 18px;
+  --control-gap: 8px;
+  --panel-radius: 26px;
+  --glass-clear: #ffffff29;
+  --glass-panel: #ffffff45;
+  --glass-sheet: #f8f9fbe6;
+  --glass-hover: #ffffff70;
+  --glass-edge: #ffffff45;
+  --glass-highlight: #ffffff52;
+  --glass-lowlight: #303d510b;
+  --glass-selected: #ffffffa3;
+  --glass-specular: #ffffff4a;
+  --glass-rim: linear-gradient(
+    145deg,
+    #ffffff66 0%,
+    #ffffff1a 26%,
+    #ffffff00 45%,
+    #50617a14 65%,
+    #ffffff33 87%,
+    #ffffff52 100%
+  );
+  --glass-sheen: linear-gradient(140deg, #ffffff26, #ffffff00 44%, #ffffff0d);
+  --glass-light: radial-gradient(
+    ellipse 220px 130px at var(--glint-x, 25%) var(--glint-y, 0%),
+    var(--glass-specular),
+    transparent 100%
+  );
+  --glass-control-shadow:
+    inset 0 0.5px 0 var(--glass-highlight),
+    inset 0 -0.5px 0 var(--glass-lowlight), 0 3px 9px -4px #1f29391a;
+  --glass-panel-shadow:
+    inset 0 0.5px 0 var(--glass-highlight), 0 12px 36px -24px #1f293924;
+  --glass-blur: blur(18px) saturate(125%);
+  --glass-panel-blur: blur(28px) saturate(115%);
+  --glass-backdrop:
+    radial-gradient(ellipse 60% 70% at 100% 70%, #b9c7d773, transparent),
+    radial-gradient(ellipse 48% 55% at 0% 48%, #c1d2cd66, transparent),
+    radial-gradient(ellipse 60% 50% at 55% 0%, #ffffffed, transparent),
+    linear-gradient(145deg, #f3f4f4, #e9edef 65%, #e0e6ed);
+}
+[data-theme="dark"] {
+  --page: #15171b;
+  --card: #23262c;
+  --text: #f1f2f4;
+  --secondary: #b9bdc5;
+  --muted: #aeb5bf;
+  --border: #bfc7d41f;
+  --soft: #2c3038;
+  --forest: #acd9cd;
+  --sage: #324942;
+  --button-bg: #ffffff1c;
+  --button-hover: #ffffff29;
+  --button-text: var(--forest);
+  --glass-primary: #ffffff1c;
+  --glass-primary-hover: #ffffff29;
+  --glass-clear: #ffffff06;
+  --glass-panel: #d4e1ff08;
+  --glass-sheet: #24272fe8;
+  --glass-hover: #ffffff14;
+  --glass-edge: #ffffff14;
+  --glass-highlight: #ffffff1a;
+  --glass-lowlight: #00000055;
+  --glass-selected: #ffffff17;
+  --glass-specular: #d5e4ff0a;
+  --glass-rim: linear-gradient(
+    145deg,
+    #ffffff66,
+    #ffffff12 26%,
+    #ffffff00 45%,
+    #00000045 65%,
+    #b6d3e729 87%,
+    #ffffff45
+  );
+  --glass-sheen: linear-gradient(140deg, #ffffff06, #ffffff00 44%, #ffffff02);
+  --glass-control-shadow:
+    inset 0 0.5px 0 var(--glass-highlight),
+    inset 0 -0.5px 0 var(--glass-lowlight), 0 3px 9px -4px #00000045;
+  --glass-panel-shadow: inset 0 0.5px 0 #ffffff12, 0 12px 36px -24px #00000066;
+  --glass-backdrop:
+    radial-gradient(ellipse 60% 70% at 100% 70%, #40537155, transparent),
+    radial-gradient(ellipse 48% 55% at 0% 48%, #334c4540, transparent),
+    radial-gradient(ellipse 60% 50% at 55% 0%, #3b404233, transparent),
+    linear-gradient(145deg, #1b1e22, #171c23 65%, #202833);
+}
+:root .observatory-shell.discovery-edition {
+  isolation: isolate;
+  background: transparent;
+}
+:root .observatory-shell.discovery-edition::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--glass-backdrop);
+}
+
+/* Glass actions share one surface; bare-control explicitly opts lightweight actions out. */
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    button,
+    a.button,
+    .header-github,
+    .text-action,
+    .browse-coverage > summary,
+    .filter-disclosure > summary
+  ):not(
+    :where(
+      .excalidraw *,
+      .bare-control,
+      .droplet-tabs > button,
+      .trial-carousel-dot,
+      .gallery-title,
+      .trend-summary,
+      .trend-card-cover,
+      .ranking-project button
+    )
+  ) {
+  --glint-x: 25%;
+  --glint-y: 0%;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--glass-light), var(--glass-sheen), var(--glass-clear);
+  box-shadow: var(--glass-control-shadow);
+  color: var(--text);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 240ms ease,
+    color 160ms ease,
+    scale 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    button,
+    a.button,
+    .header-github,
+    .text-action,
+    .browse-coverage > summary,
+    .filter-disclosure > summary
+  ):not(
+    :where(
+      .excalidraw *,
+      .bare-control,
+      .droplet-tabs > button,
+      .trial-carousel-dot,
+      .gallery-title,
+      .trend-summary,
+      .trend-card-cover,
+      .ranking-project button
+    )
+  ):not(:disabled):hover {
+  background-color: var(--glass-hover);
+  color: var(--text);
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .quick-topics button.active,
+    .content-tabs button[aria-pressed="true"],
+    .detail-tabs button.active,
+    .persona-tabs button.active,
+    .save-btn.saved,
+    .button.is-saved,
+    .glass-control[aria-pressed="true"],
+    .glass-tabs button[aria-pressed="true"],
+    .project-search-menu button[aria-checked="true"],
+    .board-switcher button[aria-pressed="true"],
+    .project-search-icon[aria-expanded="true"],
+    .browse-coverage[open] > summary
+  ) {
+  background: var(--glass-light), var(--glass-sheen), var(--glass-selected);
+  color: var(--forest);
+  border-color: var(--glass-edge);
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(button, a):is(.primary-button, .chat-send, .quick-read-ask > button) {
+  background: var(--glass-light), var(--glass-sheen), var(--glass-primary);
+  border-color: var(--glass-edge);
+  color: var(--forest);
+  box-shadow: var(--glass-control-shadow);
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(button, a):is(.primary-button, .chat-send, .quick-read-ask > button):not(
+    :disabled
+  ):hover {
+  background-color: var(--glass-primary-hover);
+  color: var(--forest);
+}
+/* One spacing contract for new GlassButton controls and existing .button actions. */
+:root
+  .observatory-shell.discovery-edition
+  :is(.button, .glass-control):not(.excalidraw *) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
+  min-height: var(--control-height);
+  padding: 10px var(--control-padding-inline);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 550;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+}
+:root .observatory-shell.discovery-edition :is(.button, .glass-control) > svg {
+  flex-shrink: 0;
+}
+:root .observatory-shell.discovery-edition .glass-tabs {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--glass-sheen), var(--glass-panel);
+  box-shadow: var(--glass-panel-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+:root .observatory-shell.discovery-edition .glass-tabs button {
+  white-space: nowrap;
+  flex-shrink: 0;
+  --control-padding-inline: 16px;
+  min-height: var(--control-height);
+  padding: 10px var(--control-padding-inline);
+  font-size: 14px;
+  line-height: 1.4;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--glass-light), var(--glass-sheen), var(--glass-clear);
+  box-shadow: var(--glass-control-shadow);
+  color: var(--secondary);
+}
+:root
+  .observatory-shell.discovery-edition
+  .glass-tabs
+  button[aria-pressed="true"] {
+  background: var(--glass-light), var(--glass-sheen), var(--glass-selected);
+  color: var(--forest);
+}
+:root .observatory-shell.discovery-edition .glass-tabs button::after {
+  content: none;
+}
+@media (max-width: 600px) {
+  :root .observatory-shell.discovery-edition .glass-tabs {
+    gap: 4px;
+    padding: 4px;
+  }
+  :root .observatory-shell.discovery-edition .glass-tabs button {
+    --control-padding-inline: 10px;
+    font-size: 13px;
+  }
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(.text-action, .trend-summary-source button) {
+  padding: 4px 10px;
+  text-decoration: none;
+}
+:root .observatory-shell.discovery-edition .browser-utilities {
+  gap: 8px;
+}
+
+/* A single floating navigation surface, with concentric controls inside it. */
+:root .observatory-shell.discovery-edition .site-header {
+  padding-top: 12px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+:root .observatory-shell.discovery-edition .site-header-inner {
+  position: relative;
+  width: calc(100% - 48px);
+  max-width: 1200px;
+  min-height: 64px;
+  padding-inline: 18px;
+  gap: 24px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background:
+    var(--glass-sheen), color-mix(in srgb, var(--card) 48%, transparent);
+  box-shadow: var(--glass-panel-shadow);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  backdrop-filter: var(--glass-panel-blur);
+}
+:root .observatory-shell.discovery-edition .site-brand > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--card);
+}
+:root .observatory-shell.discovery-edition .site-brand strong {
+  font-size: 15px;
+}
+:root .observatory-shell.discovery-edition .site-navigation {
+  gap: 4px;
+}
+:root .observatory-shell.discovery-edition .site-navigation a {
+  min-height: 38px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+:root .observatory-shell.discovery-edition .site-navigation a.selected {
+  background: var(--glass-sheen), var(--glass-selected);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-control-shadow);
+  color: var(--text);
+}
+:root .observatory-shell.discovery-edition .site-tools {
+  gap: 8px;
+  border: 0;
+  padding-left: 0;
+  margin-left: 0;
+}
+:root .observatory-shell.discovery-edition .header-search kbd {
+  background: transparent;
+}
+
+/* Readable panes use a quieter material than controls. */
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .project-exhibit.trend-project-card,
+    .recommendation-item,
+    .gh-pulse,
+    .spotlight-feature,
+    .spotlight-workbench,
+    .audience-card,
+    .understand-card,
+    .reading-note,
+    .repository-facts,
+    .requirement-understanding,
+    .persona-content,
+    .history-empty,
+    .ranking-row,
+    .intro-note,
+    .chat-welcome-card,
+    .content-failure,
+    .reader-start,
+    .trial-library-card,
+    .trial-feature,
+    .trial-workspace,
+    .trial-generating,
+    .quick-trial-launch,
+    .reader-canvas-preview
+  ) {
+  --glint-x: 25%;
+  --glint-y: 0%;
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-sheen), var(--glass-panel);
+  box-shadow: var(--glass-panel-shadow);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  backdrop-filter: var(--glass-panel-blur);
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(.project-exhibit.trend-project-card, .gh-pulse, .spotlight-feature) {
+  position: relative;
+  border-radius: 26px;
+}
+:root
+  .observatory-shell.discovery-edition
+  .project-exhibit.trend-project-card:hover {
+  border-color: var(--glass-highlight);
+  box-shadow:
+    var(--glass-panel-shadow),
+    0 18px 44px -28px #1f29391f;
+}
+:root
+  .observatory-shell.discovery-edition
+  .recommendation-item
+  .project-exhibit.trend-project-card {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+:root .observatory-shell.discovery-edition .ranking-row {
+  position: relative;
+  border-radius: 20px;
+  margin-block: 10px;
+}
+:root .observatory-shell.discovery-edition .ranking-list {
+  border-top: 0;
+}
+:root .observatory-shell.discovery-edition .gh-pulse-window::after {
+  background: none;
+}
+:root .observatory-shell.discovery-edition .trend-card-topics span {
+  background: color-mix(in srgb, var(--soft) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 7px;
+  box-shadow: none;
+}
+:root .observatory-shell.discovery-edition .trend-card-cover {
+  border-radius: 17px;
+}
+:root .observatory-shell.discovery-edition .trend-author-avatar {
+  border-radius: 50%;
+}
+
+/* The rim is a masked optical layer. It never covers or distorts the text. */
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .project-search,
+    .site-header-inner,
+    .gh-pulse,
+    .spotlight-feature,
+    .project-exhibit.trend-project-card,
+    .ranking-row,
+    .dialog
+  )::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 0.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  background: var(--glass-light), var(--glass-rim);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+:root
+  .observatory-shell.discovery-edition
+  .recommendation-item
+  .project-exhibit.trend-project-card::before {
+  content: none;
+}
+
+/* Sheets keep a denser core so content behind them cannot interfere with reading. */
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .dialog,
+    .toast,
+    .project-search-menu,
+    .browse-info-panel,
+    .gh-pulse-chart-tooltip,
+    .gh-pulse-info > div,
+    .chat-history-panel,
+    .site-navigation.mobile-open
+  ) {
+  background: var(--glass-sheen), var(--glass-sheet);
+  border-color: var(--glass-edge);
+  box-shadow:
+    var(--glass-panel-shadow),
+    0 24px 80px -24px #10182340;
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  backdrop-filter: var(--glass-panel-blur);
+}
+:root .observatory-shell.discovery-edition .dialog {
+  border-radius: 28px;
+}
+:root .observatory-shell.discovery-edition .dialog-shade {
+  background: #18202b38;
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(.quick-read-toolbar, .quick-read-bottom, .quick-read-actions) {
+  background: transparent;
+}
+:root
+  .observatory-shell.discovery-edition
+  .project-search-menu
+  button
+  + button {
+  margin-top: 4px;
+}
+
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .project-search,
+    .quick-read-ask,
+    .chat-workspace .followup-form,
+    .select-filters select,
+    .content-filters input,
+    .content-filters select,
+    .command-form input,
+    .command-mode select
+  ) {
+  background: var(--glass-sheen), var(--glass-clear);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-control-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+:root .observatory-shell.discovery-edition .project-search {
+  --glint-x: 25%;
+  --glint-y: 0%;
+  height: 68px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--glass-light), var(--glass-sheen), var(--glass-clear);
+  box-shadow:
+    var(--glass-control-shadow),
+    0 10px 24px -16px #1e30482b;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 240ms ease;
+}
+:root .observatory-shell.discovery-edition .project-search::before {
+  padding: 0.5px;
+}
+:root
+  .observatory-shell.discovery-edition
+  .project-search
+  .project-search-icon {
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--glass-sheen), var(--glass-clear);
+}
+:root
+  .observatory-shell.discovery-edition
+  .project-search
+  .project-search-submit {
+  color: var(--forest);
+  background: var(--glass-light), var(--glass-selected);
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .project-search,
+    .quick-read-ask,
+    .chat-workspace .followup-form
+  ):focus-within {
+  border-color: color-mix(in srgb, var(--forest) 35%, var(--glass-edge));
+  box-shadow:
+    var(--glass-control-shadow),
+    0 0 0 3px color-mix(in srgb, var(--forest) 8%, transparent),
+    0 16px 36px -24px #1e304840;
+}
+:root .observatory-shell.discovery-edition select option {
+  background: var(--card);
+  color: var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root .observatory-shell.discovery-edition .project-search:hover {
+    transform: translateY(-2px);
+  }
+  :root
+    .observatory-shell.discovery-edition
+    :is(button, a.button):not(
+      :where(.excalidraw *, .gallery-title, .trend-summary, .trend-card-cover)
+    ):not(:disabled):active {
+    scale: 0.97;
+    transition-duration: 100ms;
+  }
+}
+@media (max-width: 1050px) and (min-width: 821px) {
+  :root .observatory-shell.discovery-edition .site-header-inner {
+    gap: 12px;
+    padding-inline: 14px;
+  }
+  :root .observatory-shell.discovery-edition .site-navigation a {
+    padding-inline: 10px;
+  }
+}
+@media (max-width: 820px) {
+  :root .observatory-shell.discovery-edition .site-tools {
+    margin-left: auto;
+  }
+  :root .observatory-shell.discovery-edition .site-navigation {
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    padding: 8px;
+    border-radius: 24px;
+    background: var(--glass-sheen), var(--glass-sheet);
+    border: 1px solid var(--glass-edge);
+    box-shadow: var(--glass-panel-shadow);
+  }
+  :root .observatory-shell.discovery-edition .site-tools .header-control {
+    background: var(--glass-sheen), var(--glass-primary);
+    border-color: color-mix(in srgb, var(--text) 14%, var(--glass-edge));
+    box-shadow: var(--glass-control-shadow);
+  }
+  :root .observatory-shell.discovery-edition .site-tools .header-control:hover,
+  :root
+    .observatory-shell.discovery-edition
+    .site-tools
+    .header-control[aria-expanded="true"] {
+    background: var(--glass-sheen), var(--glass-selected);
+    color: var(--forest);
+  }
+}
+@media (max-width: 760px) {
+  :root .observatory-shell.discovery-edition .filter-disclosure > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    list-style: none;
+    cursor: pointer;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary::marker {
+    content: "";
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary::-webkit-details-marker {
+    display: none;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary
+    > svg {
+    display: block;
+    flex: none;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure--icon
+    > summary {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    > summary:focus-visible {
+    outline: 2px solid var(--forest);
+    outline-offset: 3px;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    .disclosure-chevron {
+    transition: rotate 180ms ease;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure[open]
+    .disclosure-chevron {
+    rotate: 90deg;
+  }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  :root
+    .observatory-shell.discovery-edition
+    .filter-disclosure
+    .disclosure-chevron {
+    transition: none;
+  }
+}
+@media (max-width: 600px) {
+  :root .observatory-shell.discovery-edition .site-header {
+    padding-top: 8px;
+  }
+  :root .observatory-shell.discovery-edition .site-header-inner {
+    width: calc(100% - 24px);
+    min-height: 62px;
+    padding-inline: 10px;
+    gap: 8px;
+  }
+  :root .observatory-shell.discovery-edition .site-tools {
+    gap: 4px;
+  }
+  :root .observatory-shell.discovery-edition .project-search {
+    height: 62px;
+    padding: 6px 8px;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    :is(.gh-pulse, .spotlight-feature) {
+    border-radius: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .observatory-shell.discovery-edition .project-search {
+    transform: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  [data-theme="dark"] {
+    --glass-clear: var(--card);
+    --glass-panel: var(--card);
+    --glass-sheet: var(--card);
+    --glass-hover: var(--soft);
+    --glass-selected: var(--soft);
+    --glass-primary: var(--card);
+    --glass-primary-hover: var(--soft);
+    --glass-blur: none;
+    --glass-panel-blur: none;
+    --glass-specular: transparent;
+  }
+  :root .observatory-shell.discovery-edition .site-header-inner {
+    background: var(--card);
+  }
+}
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  :root,
+  [data-theme="dark"] {
+    --glass-clear: var(--card);
+    --glass-panel: var(--card);
+    --glass-sheet: var(--card);
+    --glass-hover: var(--soft);
+    --glass-primary: var(--card);
+    --glass-primary-hover: var(--soft);
+  }
+  :root .observatory-shell.discovery-edition .site-header-inner {
+    background: var(--card);
+  }
+}
+@supports not (mask-composite: exclude) {
+  :root
+    .observatory-shell.discovery-edition
+    :is(
+      .project-search,
+      .site-header-inner,
+      .gh-pulse,
+      .spotlight-feature,
+      .project-exhibit.trend-project-card,
+      .ranking-row,
+      .dialog
+    )::before {
+    content: none;
+  }
+}
+
+/* Keep utility icons and language links clear, including expanded/pressed states. */
+:root .observatory-shell.discovery-edition .bare-control.bare-control {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: var(--secondary);
+  scale: 1;
+  transition:
+    color 160ms ease,
+    opacity 160ms ease;
+}
+:root
+  .observatory-shell.discovery-edition
+  .bare-control.bare-control:not(:disabled):hover,
+:root
+  .observatory-shell.discovery-edition
+  .bare-control.bare-control[aria-expanded="true"],
+:root
+  .observatory-shell.discovery-edition
+  .bare-control.bare-control[aria-pressed="true"] {
+  color: var(--forest);
+  background: transparent;
+  box-shadow: none;
+}
+:root .observatory-shell.discovery-edition .bare-control:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+}
+:root .observatory-shell.discovery-edition .bare-control:disabled {
+  opacity: 0.45;
+}
+:root .observatory-shell.discovery-edition .gh-pulse-controls {
+  gap: 4px;
+}
+:root .observatory-shell.discovery-edition .gh-pulse-controls .bare-control {
+  width: 44px;
+  height: 44px;
+}
+:root .observatory-shell.discovery-edition .project-search-submit.bare-control {
+  color: var(--forest);
+}
+:root
+  .observatory-shell.discovery-edition
+  .summary-language-toggle.bare-control {
+  padding: 0 4px;
+  margin: -6px 0;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+}
+:root
+  .observatory-shell.discovery-edition
+  .summary-language-toggle.bare-control:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Categories use one moving surface instead of six separate glass buttons. */
+:root .observatory-shell.discovery-edition .category-filters {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 26px;
+  background: var(--glass-sheen), var(--glass-clear);
+  box-shadow: var(--glass-control-shadow);
+}
+:root .observatory-shell.discovery-edition .category-filters .bare-control {
+  position: relative;
+  z-index: 1;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+/* Customizable native pickers retain keyboard, touch and select semantics. */
+:root .observatory-shell.discovery-edition .select-filters select {
+  min-height: 44px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+@supports (appearance: base-select) {
+  :root .observatory-shell.discovery-edition select:not(.excalidraw *),
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)::picker(select) {
+    appearance: base-select;
+  }
+  :root .observatory-shell.discovery-edition select:not(.excalidraw *) {
+    align-items: center;
+    gap: 10px;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .select-filters
+    select::picker-icon {
+    display: none;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)::picker(select) {
+    min-width: 160px;
+    min-width: max(160px, anchor-size(width));
+    max-height: min(360px, 60dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin-block: 8px;
+    padding: 6px;
+    border: 1px solid var(--glass-edge);
+    border-radius: 16px;
+    background: var(--glass-sheen), var(--glass-sheet);
+    box-shadow:
+      var(--glass-panel-shadow),
+      0 18px 48px -18px #10182345;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    -webkit-backdrop-filter: var(--glass-panel-blur);
+    backdrop-filter: var(--glass-panel-blur);
+  }
+  :root .observatory-shell.discovery-edition select:not(.excalidraw *) option {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--secondary);
+    cursor: pointer;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)
+    option:checked {
+    background: color-mix(in srgb, var(--sage) 65%, transparent);
+    color: var(--forest);
+    font-weight: 600;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)
+    option:hover,
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)
+    option:focus-visible {
+    background: var(--glass-hover);
+    color: var(--text);
+    outline: 1px solid color-mix(in srgb, var(--forest) 35%, transparent);
+    outline-offset: -1px;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)
+    option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+    color: var(--forest);
+  }
+}
+
+/* One capsule holds both paging actions; each half keeps a complete hit area. */
+:root .observatory-shell.discovery-edition .quick-read-pager {
+  position: relative;
+  gap: 0;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--glass-sheen), var(--glass-clear);
+  box-shadow: var(--glass-control-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+:root .observatory-shell.discovery-edition .quick-read-pager::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 50%;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+:root .observatory-shell.discovery-edition .quick-read-pager > button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
+:root
+  .observatory-shell.discovery-edition
+  .quick-read-pager
+  > button:focus-visible {
+  outline-offset: -4px;
+  border-radius: 999px;
+}
+
+/* Tab labels stay clear while their shared glass droplet moves behind them. */
+:root .observatory-shell.discovery-edition .glass-tabs.droplet-tabs {
+  isolation: isolate;
+}
+:root .observatory-shell.discovery-edition .glass-tabs.droplet-tabs > button {
+  position: relative;
+  z-index: 1;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: var(--secondary);
+  font-weight: 550;
+  scale: 1;
+  transition: color 160ms ease;
+}
+:root
+  .observatory-shell.discovery-edition
+  .glass-tabs.droplet-tabs
+  > button[aria-pressed="true"],
+:root
+  .observatory-shell.discovery-edition
+  .glass-tabs.droplet-tabs
+  > button:hover {
+  background: transparent;
+  color: var(--forest);
+  box-shadow: none;
+}
+
+/* Keep closing menus mounted/top-layered until their reverse transition finishes. */
+:root .observatory-shell.discovery-edition .project-search-menu {
+  display: block;
+  animation: none;
+  translate: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  clip-path: inset(-48px round 16px);
+  transform-origin: top left;
+}
+:root .observatory-shell.discovery-edition .project-search-menu[hidden] {
+  display: none;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98, 0.92);
+  clip-path: inset(0 0 85% 0 round 16px);
+  pointer-events: none;
+}
+@supports (appearance: base-select) {
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)::picker(select) {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98, 0.92);
+    clip-path: inset(0 0 85% 0 round 16px);
+    transform-origin: top center;
+    pointer-events: none;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *):open::picker(select) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    clip-path: inset(-48px round 16px);
+    pointer-events: auto;
+  }
+  :root .observatory-shell.discovery-edition select:open::picker-icon {
+    rotate: 180deg;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root .observatory-shell.discovery-edition .project-search-menu,
+  :root
+    .observatory-shell.discovery-edition
+    select:not(.excalidraw *)::picker(select) {
+    transition:
+      opacity 180ms ease,
+      transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      clip-path 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      display 220ms allow-discrete,
+      overlay 220ms allow-discrete;
+  }
+  :root .observatory-shell.discovery-edition select::picker-icon,
+  :root
+    .observatory-shell.discovery-edition
+    .select-filters
+    label
+    > svg:last-child {
+    transition: rotate 180ms ease;
+  }
+  @starting-style {
+    :root
+      .observatory-shell.discovery-edition
+      .project-search-menu:not([hidden]),
+    :root
+      .observatory-shell.discovery-edition
+      select:not(.excalidraw *):open::picker(select) {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98, 0.92);
+      clip-path: inset(0 0 85% 0 round 16px);
+    }
+  }
+}
+:root
+  .observatory-shell.discovery-edition
+  .select-filters
+  label:has(select:open)
+  > svg:last-child {
+  rotate: 180deg;
+}

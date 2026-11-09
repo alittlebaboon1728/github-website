@@ -1,0 +1,412 @@
+/* A quiet reading list: rank, purpose, then the measure that defines this view. */
+:root .observatory-shell.discovery-edition .ranking-page {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding-top: 54px;
+}
+:root .observatory-shell.discovery-edition .ranking-heading {
+  align-items: center;
+  margin-bottom: 34px;
+}
+:root .observatory-shell.discovery-edition .ranking-heading h1 {
+  font-size: clamp(30px, 3.6vw, 42px);
+  font-weight: 650;
+  letter-spacing: -1.6px;
+  line-height: 1.3;
+}
+:root .observatory-shell.discovery-edition .ranking-heading p {
+  margin-top: 10px;
+  font-size: 14px;
+}
+:root .observatory-shell.discovery-edition .ranking-refresh {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+:root .observatory-shell.discovery-edition .ranking-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+:root .observatory-shell.discovery-edition .ranking-tabs {
+  margin: 0;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-clear);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+:root .observatory-shell.discovery-edition .ranking-tabs button {
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: 13px;
+  gap: 8px;
+}
+:root .observatory-shell.discovery-edition .ranking-filters {
+  margin: 0;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+:root .observatory-shell.discovery-edition .ranking-filters select {
+  min-height: 44px;
+  max-width: 150px;
+  border-radius: 14px;
+  font-size: 12px;
+  padding: 0 12px;
+  color: var(--secondary);
+}
+:root .observatory-shell.discovery-edition .ranking-caption {
+  padding: 25px 2px 14px;
+  border: 0;
+  margin: 0;
+  font-size: 12px;
+  gap: 12px;
+}
+:root .observatory-shell.discovery-edition .ranking-generation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 34px;
+  margin-bottom: 8px;
+  color: var(--secondary);
+  font-size: 12px;
+}
+:root .observatory-shell.discovery-edition .ranking-generation button {
+  min-height: 32px;
+  padding: 4px 12px;
+}
+:root .observatory-shell.discovery-edition .ranking-list {
+  display: grid;
+  gap: 12px;
+  border: 0;
+}
+:root .observatory-shell.discovery-edition .ranking-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 110px 44px;
+  align-items: start;
+  gap: 24px;
+  margin: 0;
+  padding: 26px 28px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 24px;
+  background: var(--glass-sheen), var(--glass-panel);
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+:root .observatory-shell.discovery-edition .ranking-row:hover {
+  border-color: color-mix(in srgb, var(--forest) 16%, var(--glass-edge));
+  background-color: var(--glass-clear);
+}
+:root .observatory-shell.discovery-edition .ranking-position {
+  width: auto;
+  padding-top: 1px;
+  font-size: 29px;
+  font-weight: 450;
+  letter-spacing: -1px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+:root .observatory-shell.discovery-edition .ranking-project button {
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: none;
+  backdrop-filter: none;
+  min-width: 0;
+}
+:root .observatory-shell.discovery-edition .ranking-project-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  min-height: 28px;
+  max-width: 100%;
+}
+:root .observatory-shell.discovery-edition .ranking-project-title h2 {
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.45px;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+:root .observatory-shell.discovery-edition .ranking-project-title svg {
+  flex-shrink: 0;
+  color: var(--muted);
+  opacity: 0.65;
+}
+:root .observatory-shell.discovery-edition .ranking-owner {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--secondary);
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+:root .observatory-shell.discovery-edition .ranking-project .ranking-summary {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-top: 14px;
+  font-weight: 400;
+  text-align: left;
+}
+:root .observatory-shell.discovery-edition .ranking-summary p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--secondary);
+  min-height: 52px;
+  overflow-wrap: anywhere;
+}
+:root .observatory-shell.discovery-edition .ranking-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  min-height: 32px;
+  font-size: 12px;
+  color: var(--secondary);
+}
+:root .observatory-shell.discovery-edition .ranking-card-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+:root .observatory-shell.discovery-edition .ranking-language i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+:root
+  .observatory-shell.discovery-edition
+  .ranking-card-meta
+  .ranking-original {
+  font-size: 12px;
+  min-height: 32px;
+  padding: 0 4px;
+  font-weight: 500;
+  color: var(--forest);
+}
+:root .observatory-shell.discovery-edition .ranking-score {
+  align-self: center;
+  display: grid;
+  justify-items: end;
+  gap: 14px;
+}
+:root .observatory-shell.discovery-edition .ranking-metric {
+  font-size: 28px;
+  font-weight: 550;
+  letter-spacing: -1px;
+  min-width: 0;
+  line-height: 1.2;
+}
+:root .observatory-shell.discovery-edition .ranking-metric small {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 7px;
+}
+:root
+  .observatory-shell.discovery-edition
+  .ranking-score:has(.star-sparkline)
+  .ranking-metric[data-direction="positive"] {
+  color: var(--forest);
+}
+:root .observatory-shell.discovery-edition .ranking-row .star-sparkline {
+  display: block;
+  width: 100px;
+  height: 32px;
+}
+:root .observatory-shell.discovery-edition .ranking-row .ranking-save {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+:root .observatory-shell.discovery-edition .ranking-save.saved {
+  color: var(--forest);
+}
+:root .observatory-shell.discovery-edition .ranking-more {
+  display: flex;
+  justify-content: center;
+  padding: 28px 0 8px;
+}
+:root .observatory-shell.discovery-edition .ranking-source-details {
+  padding-top: 16px;
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+}
+:root .observatory-shell.discovery-edition .ranking-source-details summary {
+  font-size: 12px;
+  min-height: 44px;
+  width: fit-content;
+}
+:root .observatory-shell.discovery-edition .ranking-empty {
+  padding: 64px 24px;
+  border-radius: 28px;
+  border: 1px solid var(--glass-edge);
+  margin-top: 8px;
+}
+:root .observatory-shell.discovery-edition .ranking-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  border-radius: 22px;
+  background: var(--glass-clear);
+  color: var(--forest);
+  box-shadow: var(--glass-control-shadow);
+}
+:root .observatory-shell.discovery-edition .ranking-empty h2 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+:root .observatory-shell.discovery-edition .ranking-empty p {
+  max-width: 30em;
+}
+@media (max-width: 960px) {
+  :root .observatory-shell.discovery-edition .ranking-toolbar {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-row {
+    gap: 18px;
+    padding: 24px;
+    grid-template-columns: 32px minmax(0, 1fr) 90px 44px;
+  }
+}
+@media (max-width: 600px) {
+  :root .observatory-shell.discovery-edition .ranking-page {
+    padding-top: 30px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-heading {
+    margin-bottom: 24px;
+    gap: 12px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-heading h1 {
+    font-size: 30px;
+    letter-spacing: -1px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-heading p {
+    font-size: 13px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-tabs {
+    width: 100%;
+  }
+  :root .observatory-shell.discovery-edition .ranking-tabs button {
+    flex: 1;
+    justify-content: center;
+    padding-inline: 12px;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .ranking-toolbar
+    > .filter-disclosure {
+    width: 100%;
+    margin: 0;
+  }
+  :root .observatory-shell.discovery-edition .ranking-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-filters select {
+    max-width: none;
+    width: 100%;
+    min-width: 0;
+  }
+  :root
+    .observatory-shell.discovery-edition
+    .ranking-filters
+    select:last-child {
+    grid-column: 1 / -1;
+  }
+  :root .observatory-shell.discovery-edition .ranking-caption {
+    padding-top: 20px;
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  :root .observatory-shell.discovery-edition .ranking-row {
+    grid-template-columns: 28px minmax(0, 1fr) 44px;
+    gap: 4px 10px;
+    padding: 18px;
+    border-radius: 22px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-project {
+    display: contents;
+  }
+  :root .observatory-shell.discovery-edition .ranking-position {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    font-size: 24px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-project-title {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  :root .observatory-shell.discovery-edition .ranking-project-title h2 {
+    font-size: 17px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-project-title svg {
+    display: none;
+  }
+  :root .observatory-shell.discovery-edition .ranking-owner {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+  }
+  :root .observatory-shell.discovery-edition .ranking-project .ranking-summary {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 12px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-summary p {
+    font-size: 14px;
+    min-height: 78px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-score {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 23px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-metric small {
+    margin: 0;
+  }
+  :root .observatory-shell.discovery-edition .ranking-card-meta {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    gap: 6px 12px;
+    margin-top: 10px;
+  }
+  :root .observatory-shell.discovery-edition .ranking-save {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+  :root .observatory-shell.discovery-edition .ranking-empty {
+    padding: 46px 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .observatory-shell.discovery-edition .ranking-row {
+    transition: none;
+  }
+}

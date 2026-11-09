@@ -1,0 +1,152 @@
+/* Keep long/short pages stable and dialogs centered when the scrollbar disappears. */
+html {
+  scrollbar-gutter: stable both-edges;
+}
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
+}
+
+:root .observatory-shell.discovery-edition .site-navigation {
+  isolation: isolate;
+}
+:root .observatory-shell.discovery-edition .site-navigation > a,
+:root .observatory-shell.discovery-edition .site-navigation > a.selected,
+:root .observatory-shell.discovery-edition .site-navigation > a:hover {
+  position: relative;
+  z-index: 1;
+  justify-content: center;
+  min-height: var(--navigation-link-height, 38px);
+  height: var(--navigation-link-height, 38px);
+  padding: var(--navigation-link-padding, 0 8px);
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 600;
+  white-space: nowrap;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: color 180ms ease;
+}
+:root .observatory-shell.discovery-edition .site-navigation > a.selected {
+  color: var(--text);
+}
+:root
+  .observatory-shell.discovery-edition
+  .site-navigation
+  > a:not(.selected):hover {
+  color: var(--forest);
+}
+:root .observatory-shell.discovery-edition .navigation-droplet,
+:root .observatory-shell.discovery-edition .selection-droplet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background: var(--glass-sheen), var(--glass-selected);
+  box-shadow: var(--glass-control-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  transform-origin: center;
+  z-index: 0;
+}
+:root .observatory-shell.discovery-edition .site-navigation .navigation-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  margin: 0;
+  border-radius: 99px;
+  background: var(--sage);
+  color: var(--forest);
+  font-size: 9px;
+  line-height: 15px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+@media (min-width: 821px) {
+  :root .observatory-shell.discovery-edition .site-navigation {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 400px;
+    flex: 0 0 400px;
+    gap: 4px;
+  }
+}
+@media (min-width: 821px) and (max-width: 1050px) {
+  :root .observatory-shell.discovery-edition .site-navigation {
+    width: 360px;
+    flex-basis: 360px;
+  }
+}
+@media (max-width: 820px) {
+  :root .observatory-shell.discovery-edition .site-navigation {
+    --navigation-link-height: 44px;
+    --navigation-link-padding: 0 2px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    width: auto;
+    margin-left: 0;
+    padding: 8px;
+    border-radius: 24px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.98, 0.94);
+    transform-origin: top right;
+    clip-path: inset(0 0 100% 0 round 24px);
+    transition:
+      opacity 160ms ease,
+      transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      clip-path 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 240ms;
+  }
+  :root .observatory-shell.discovery-edition .site-tools .nav-menu {
+    display: inline-flex;
+  }
+  :root .observatory-shell.discovery-edition .site-navigation.mobile-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    clip-path: inset(-40px round 24px);
+    transition-delay: 0s;
+  }
+  :root .observatory-shell.discovery-edition .site-navigation > a {
+    font-size: 11px;
+  }
+  :root .observatory-shell.discovery-edition .site-tools .header-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+  :root .observatory-shell.discovery-edition .site-tools {
+    gap: 8px;
+  }
+  :root .observatory-shell.discovery-edition .header-control > svg {
+    display: block;
+    flex: none;
+  }
+}
+@media (max-width: 820px) and (prefers-reduced-motion: reduce) {
+  :root .observatory-shell.discovery-edition .site-navigation {
+    transition: none;
+  }
+}

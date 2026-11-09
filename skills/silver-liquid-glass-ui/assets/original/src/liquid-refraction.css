@@ -1,0 +1,89 @@
+/* Material/press treatment adapted from Weiqin-Mo/Liquid-Glass-HTML (MIT).
+   The SVG URL is supplied by its original SDF displacement algorithm. */
+:root {
+  --glass-clear: #ffffff14;
+  --glass-panel: #ffffff1a;
+  --lgh-blur: 12px;
+  --lgh-brightness: 1.025;
+  --lgh-top-light: #ffffff52;
+  --lgh-bottom-shade: #2833470d;
+  --lgh-shadow: #25314510;
+}
+[data-theme="dark"] {
+  --glass-clear: #ffffff08;
+  --glass-panel: #ffffff0f;
+  --lgh-brightness: 1.08;
+  --lgh-top-light: #ffffff24;
+  --lgh-bottom-shade: #00000029;
+  --lgh-shadow: #0000002b;
+}
+:root
+  .observatory-shell.discovery-edition
+  [data-lg-refraction][data-lg-refraction] {
+  -webkit-backdrop-filter: blur(var(--lgh-blur)) saturate(150%)
+    brightness(var(--lgh-brightness)) var(--lg-refraction);
+  backdrop-filter: blur(var(--lgh-blur)) saturate(150%)
+    brightness(var(--lgh-brightness)) var(--lg-refraction);
+}
+:root .observatory-shell.discovery-edition [data-lg-refraction="surface"] {
+  box-shadow:
+    inset 0 0.5px 0 var(--lgh-top-light),
+    inset 0 -0.5px 0 var(--lgh-bottom-shade),
+    0 5px 16px -6px var(--lgh-shadow),
+    0 12px 28px -18px var(--lgh-shadow);
+}
+:root .observatory-shell.discovery-edition [data-lg-refraction="control"] {
+  --lgh-blur: 8px;
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(
+    .project-search,
+    .site-header-inner,
+    .gh-pulse,
+    .spotlight-feature,
+    .trend-project-card,
+    .ranking-row,
+    .dialog
+  )[data-lg-refraction]::before {
+  /* The source's bevel replaces the previous drawn optical outline. */
+  content: none;
+}
+:root
+  .observatory-shell.discovery-edition
+  :is(.dialog, .project-search-menu, .browse-info-panel)[data-lg-refraction] {
+  --lgh-blur: 20px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root
+    .observatory-shell.discovery-edition
+    :is(button, a.button)[data-lg-refraction="control"]:not(:disabled):active {
+    scale: 1.025;
+    transition: scale 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow:
+      0 6px 18px -4px var(--lgh-shadow),
+      inset 0 0.5px 0 var(--lgh-top-light);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  [data-theme="dark"] {
+    --glass-clear: var(--card);
+    --glass-panel: var(--card);
+  }
+  :root
+    .observatory-shell.discovery-edition
+    [data-lg-refraction][data-lg-refraction] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  :root,
+  [data-theme="dark"] {
+    --glass-clear: var(--card);
+    --glass-panel: var(--card);
+  }
+}
